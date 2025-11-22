@@ -7,11 +7,11 @@
 class scoring_game : public game
 {
 public:
-    virtual int count_score();
+    virtual int count_score()=0;
 
 protected:
 
 private:
-    
+
 }; // class scoring_game
 
