@@ -15,7 +15,6 @@ class dots_and_boxes : public scoring_game
 public:
     dots_and_boxes(int n_rows, int n_cols);
 
-
     void play(const Move& m, bw to_play) override;
     void undo_move() override;
 
