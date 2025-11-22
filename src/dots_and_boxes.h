@@ -8,7 +8,11 @@
 #include <ostream>
 
 
-
+enum class box_value : unsigned char {
+    EMPTY = 0,
+    LEFT = 2,
+    RIGHT = 3
+};
 
 class dots_and_boxes : public scoring_game
 {
@@ -22,9 +26,9 @@ public:
 
     void print(std::ostream& str) const override;
 
-    game* inverse() override;
+    game* inverse() const override;
 
-    int count_score();
+    int count_score() const override;
 
 protected:
 
@@ -38,5 +42,6 @@ private:
 
     std::vector<bool> _vertical;
     std::vector<bool> _horizontal;
+    std::vector<box_value> _boxes;
 
 }
