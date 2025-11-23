@@ -6,6 +6,7 @@
 #include <vector>
 #include <ostream>
 #include <string>
+#include <iostream>
 #include <cassert>
 
 
@@ -17,10 +18,43 @@ for dots and boxes the moves will be structurd as follows:
     bits 0-28 position indicating which line we are placing
 */
 
-
 //---------------------------------------------------------------------------
 
 namespace {
+const int ROW_SEP = 3;
+const int DIM_SEP = 4;
+
+void check_is_valid_char(char c)
+{
+    THROW_ASSERT(c == 'X' || c == 'O' || c == '.' || c == '$' || c == '|');
+}
+
+int char_to_color(char c)
+{
+    if (c == 'X')
+        return BLACK;
+    else if (c == 'O')
+        return WHITE;
+    else if (c == '.')
+        return EMPTY;
+    else if (c == '|')
+        return ROW_SEP;
+    else if (c == '$')
+        return DIM_SEP;
+    else
+        assert(false);
+
+    exit(-1);
+    return -1;
+}
+
+int color_to_char(int color)
+{
+    static char db_char[] = {'X', 'O', '.', '|', '$'};
+
+    assert_range(color, BLACK, DIM_SEP + 1);
+    return db_char[color];
+}
 
 dots_and_boxes_state string_to_board(const std::string& game_as_string)
 {
@@ -66,7 +100,6 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
             {
                 boxes.push_back(color)
             }
-            counter++;
         }
     }
 
@@ -191,15 +224,38 @@ dots_and_boxes::dots_and_boxes(int n_rows, int n_cols) : scoring_game()
 
 dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game()
 {
+    std::cout << "in d&b string constructor" << std::endl;
     dots_and_boxes_state state = string_to_board(game_as_string);
 
     // make sure the moves will fit into the 29 bits we use for position of the move
     int n_rows = state.shape.first, n_cols = state.shape.second;
-    assert(n_rows*(n_cols + 1) + n_cols(n_rows + 1) < 536870912); // 536870912 = 2^29
+    assert(_get_total_moves < 536870912); // 536870912 = 2^29
 
     _horizontal = state.horizontal;
     _vertical = state.vertical;
     _boxes = state.boxes;
     _shape = state.shape;
+
+    std::cout << "got state\nhorizontal array:" << std::endl;
+    for (auto x : _horizontal)
+    {
+        std::cout << "  " << int(x)
+    }
+    std::cout << std::endl; << "vertical array:" << std::endl;
+    for (auto x : _vertical)
+    {
+        std::cout << "  " << int(x)
+    }
+    std::cout << std::endl; << "boxes array:" << std::endl;
+    for (auto x : _boxes)
+    {
+        std::cout << "  " << int(x)
+    }
+    std::cout << std::endl;
+}
+
+int dots_and_boxes::get_total_moves(int& rows = n_rows, int& cols = n_cols) const
+{
+    return n_rows * (n_cols + 1) + n_cols * (n_rows + 1);
 }
 

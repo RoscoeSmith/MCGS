@@ -8,12 +8,6 @@
 #include <ostream>
 
 
-// enum class box_value : unsigned char {
-//     EMPTY = 0,
-//     LEFT = 2,
-//     RIGHT = 3
-// };
-
 class dots_and_boxes : public scoring_game
 {
 public:
@@ -37,6 +31,8 @@ protected:
 
 
 private:
+    int _get_total_moves(int& rows, int& cols);
+
     int _left_score;
     int _right_score;
 
