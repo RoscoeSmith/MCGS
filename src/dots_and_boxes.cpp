@@ -174,6 +174,9 @@ dots_and_boxes_move_generator::operator bool() const
     assert(*this);
     assert(_location < n_rows*(n_cols + 1) + n_cols(n_rows +1));
 
+    // first check if the move is a capture move
+
+
 
 
 }
@@ -185,8 +188,6 @@ void dots_and_boxes_move_generator::_next_move()
 
     int n_rows = _game.shape.first, n_cols = _game.shape.second;
 
-    bool is_played;
-
     _has_move = false;
 
     if(++_location >= n_rows*(n_cols + 1) + n_cols(n_rows + 1))
@@ -194,14 +195,12 @@ void dots_and_boxes_move_generator::_next_move()
 
     while(true){
 
-        if(_location >= n_rows*(n_cols + 1)){
-            is_played = 
-        }
-
-        if(_location < n_rows*(n_cols + 1) + n_cols(n_rows + 1) && /* this move hasn't been played*/)
+        if(_location >= n_rows*(n_cols + 1) + n_cols(n_rows + 1) || !has_been_played(_location))
         {
             break;
         }
+
+        _location ++;
 
     }
 
@@ -258,6 +257,28 @@ dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game
     std::cout << std::endl;
 }
 
+move_generator* dots_and_boxes::create_move_generator(bw to_play) const
+{
+    return new dots_and_boxes_move_generator(*this, to_play);
+}
+
+bool dots_and_boxes::has_been_played(int position) const{
+
+    int n_rows = _game.shape.first, n_cols = _game.shape.second;
+
+    assert(position < n_rows*(n_cols + 1) + n_cols(n_rows +1));
+
+    if(position < n_rows*(n_cols + 1))
+    {
+        return _vertical.at(position);
+    }
+    else
+    {
+        return _horizontal.at(position - n_rows*(n_cols + 1));
+    }
+
+}
+
 game* dots_and_boxes::inverse() const
 {
     assert(false);
@@ -268,7 +289,7 @@ int dots_and_boxes::count_score() const
     return _left_score - _right_score;
 }
 
-int dots_and_boxes::get_total_moves(int& rows = n_rows, int& cols = n_cols) const
+int dots_and_boxes::_get_total_moves(int& rows = n_rows, int& cols = n_cols) const
 {
     return n_rows * (n_cols + 1) + n_cols * (n_rows + 1);
 }

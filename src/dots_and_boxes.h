@@ -19,7 +19,7 @@ public:
 
     move_generator* create_move_generator(bw to_play) const override;
 
-    bool has_been_played()
+    bool has_been_played(int position) const;
 
     void print(std::ostream& str) const override;
 
@@ -33,7 +33,7 @@ protected:
 
 
 private:
-    int _get_total_moves(int& rows, int& cols);
+    int _get_total_moves(int& rows, int& cols) const;
 
     int _left_score;
     int _right_score;
