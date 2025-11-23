@@ -17,8 +17,8 @@
 class dots_and_boxes : public scoring_game
 {
 public:
-    dots_and_boxes(int n_rows, int n_cols);
-    dots_and_boxes(const std::string& game_as_string)
+    dots_and_boxes(int n_rows, int n_cols); // for new game
+    dots_and_boxes(const std::string& game_as_string); // for game as string
 
     void play(const Move& m, bw to_play) override;
     void undo_move() override;
