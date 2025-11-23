@@ -6,6 +6,7 @@
 #include <vector>
 #include <ostream>
 #include <string>
+#include <iostream>
 
 //---------------------------------------------------------------------------
 
@@ -77,10 +78,28 @@ std::string board_to_string(const std::vector<bool>& horizontal,const std::vecto
 
 dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game()
 {
+    std::cout << "in d&b string constructor" << std::endl;
     dots_and_boxes_state state = string_to_board(game_as_string);
     _horizontal = state.horizontal;
     _vertical = state.vertical;
     _boxes = state.boxes;
     _shape = state.shape;
+
+    std::cout << "got state\nhorizontal array:" << std::endl;
+    for (auto x : _horizontal)
+    {
+        std::cout << "  " << int(x)
+    }
+    std::cout << std::endl; << "vertical array:" << std::endl;
+    for (auto x : _vertical)
+    {
+        std::cout << "  " << int(x)
+    }
+    std::cout << std::endl; << "boxes array:" << std::endl;
+    for (auto x : _boxes)
+    {
+        std::cout << "  " << int(x)
+    }
+    std::cout << std::endl;
 }
 
