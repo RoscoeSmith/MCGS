@@ -7,10 +7,54 @@
 #include <ostream>
 #include <string>
 #include <iostream>
+#include <cassert>
+
+
+/*
+for dots and boxes the moves will be structurd as follows:
+    bit 31 = color bit (fromt cgt_move)
+    bit 30 = sign bit (fromt cgt_move)
+    bit 29 = capture bit
+    bits 0-28 position indicating which line we are placing
+*/
 
 //---------------------------------------------------------------------------
 
 namespace {
+const int ROW_SEP = 3;
+const int DIM_SEP = 4;
+
+void check_is_valid_char(char c)
+{
+    THROW_ASSERT(c == 'X' || c == 'O' || c == '.' || c == '$' || c == '|');
+}
+
+int char_to_color(char c)
+{
+    if (c == 'X')
+        return BLACK;
+    else if (c == 'O')
+        return WHITE;
+    else if (c == '.')
+        return EMPTY;
+    else if (c == '|')
+        return ROW_SEP;
+    else if (c == '$')
+        return DIM_SEP;
+    else
+        assert(false);
+
+    exit(-1);
+    return -1;
+}
+
+int color_to_char(int color)
+{
+    static char db_char[] = {'X', 'O', '.', '|', '$'};
+
+    assert_range(color, BLACK, DIM_SEP + 1);
+    return db_char[color];
+}
 
 dots_and_boxes_state string_to_board(const std::string& game_as_string)
 {
@@ -56,12 +100,12 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
             {
                 boxes.push_back(color)
             }
-            counter++;
         }
     }
 
     int_pair shape = {n_rows, n_cols};
     return {horizontal, vertical, boxes, shape};
+
 }
 
 std::string board_to_string(const std::vector<bool>& horizontal,const std::vector<bool>& vertical, const std::vector<int>& boxes, const int_pair shape)
@@ -76,10 +120,117 @@ std::string board_to_string(const std::vector<bool>& horizontal,const std::vecto
 
 //---------------------------------------------------------------------------
 
+class dots_and_boxes_move_generator : public move_generator
+{
+public:
+    dots_and_boxes_move_generator(const dots_and_boxes& game, bw to_play);
+
+    void operator++() override;
+    operator bool() const override;
+    ::move gen_move() const override;
+
+
+private:
+
+    void _next_move();
+    
+    bool _increment();
+
+    const dots_and_boxes& _game;
+
+    int _location;
+    bool _has_move;
+
+};
+
+dots_and_boxes_move_generator::dots_and_boxes_move_generator(const dots_and_boxes& game, bw to_play)
+    : move_generator(to_play),
+    _game(game),
+    _location(0),
+    _has_move(false)
+{
+
+    if(_game.shape.first > 0 and _game.shape.second > 0)
+        _next_move();
+    
+}
+
+void dots_and_boxes_move_generator::operator++()
+{
+    assert(*this);
+    _next_move();
+}
+
+dots_and_boxes_move_generator::operator bool() const
+{
+    return _has_move;
+}
+
+::move dots_and_boxes_move_generator::gen_move() const
+{
+
+    int n_rows = _game.shape.first, n_cols = _game.shape.second;
+
+    assert(*this);
+    assert(_location < n_rows*(n_cols + 1) + n_cols(n_rows +1));
+
+    return 0x20000000 | _location;
+
+}
+
+void dots_and_boxes_move_generator::_next_move()
+{
+
+    assert(*this);
+
+    int n_rows = _game.shape.first, n_cols = _game.shape.second;
+
+
+    _has_move = false;
+
+    if(++_location >= n_rows*(n_cols + 1) + n_cols(n_rows + 1))
+        return;
+
+    while(true){
+
+
+        if(_location < n_rows*(n_cols + 1) + n_cols(n_rows + 1)){
+            
+        }
+
+
+    }
+
+
+}
+
+
+dots_and_boxes::dots_and_boxes(int n_rows, int n_cols) : scoring_game()
+{
+
+    assert(n_rows*(n_cols + 1) + n_cols(n_rows + 1) < 1073741824); // otherwise the move won't fit
+
+    _horizontal = std::vector<bool>(n_cols * (n_rows + 1), false);
+    _vertical = std::vector<bool>(n_rows * (n_cols + 1), false);
+    _boxes = std::vector<int>(n_rows * n_cols, 0);
+
+    _left_score = 0;
+    _right_score = 0;
+
+    _shape.first = n_rows;
+    _shape.second = n_cols;
+
+}
+
 dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game()
 {
     std::cout << "in d&b string constructor" << std::endl;
     dots_and_boxes_state state = string_to_board(game_as_string);
+
+    // make sure the moves will fit into the 29 bits we use for position of the move
+    int n_rows = state.shape.first, n_cols = state.shape.second;
+    assert(_get_total_moves < 536870912); // 536870912 = 2^29
+
     _horizontal = state.horizontal;
     _vertical = state.vertical;
     _boxes = state.boxes;
@@ -101,5 +252,10 @@ dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game
         std::cout << "  " << int(x)
     }
     std::cout << std::endl;
+}
+
+int dots_and_boxes::get_total_moves(int& rows = n_rows, int& cols = n_cols) const
+{
+    return n_rows * (n_cols + 1) + n_cols * (n_rows + 1);
 }
 
