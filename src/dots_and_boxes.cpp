@@ -141,7 +141,7 @@ dots_and_boxes_move_generator::operator bool() const
     assert(*this);
     assert(_location < n_rows*(n_cols + 1) + n_cols(n_rows +1));
 
-    return 0x20000000 | _location;
+
 
 }
 
@@ -150,8 +150,7 @@ void dots_and_boxes_move_generator::_next_move()
 
     assert(*this);
 
-    int n_rows = _game.shape.first, n_cols = _game.shape.second;
-
+    int n_rows = _game.shape.first, n_cols = _game.shape.second, local_location;
 
     _has_move = false;
 
@@ -160,11 +159,12 @@ void dots_and_boxes_move_generator::_next_move()
 
     while(true){
 
+        if()
 
-        if(_location < n_rows*(n_cols + 1) + n_cols(n_rows + 1)){
-            
+        if(_location < n_rows*(n_cols + 1) + n_cols(n_rows + 1) && /* this move hasn't been played*/)
+        {
+            break;
         }
-
 
     }
 
