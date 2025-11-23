@@ -6,6 +6,17 @@
 #include <vector>
 #include <ostream>
 #include <string>
+#include <cassert>
+
+
+/*
+for dots and boxes the moves will be structurd as follows:
+    bit 31 = color bit (fromt cgt_move)
+    bit 30 = sign bit (fromt cgt_move)
+    bit 29 = capture bit
+    bits 0-28 position indicating which line we are placing
+*/
+
 
 //---------------------------------------------------------------------------
 
@@ -119,9 +130,7 @@ void dots_and_boxes_move_generator::operator++()
 
 dots_and_boxes_move_generator::operator bool() const
 {
-
     return _has_move;
-
 }
 
 ::move dots_and_boxes_move_generator::gen_move() const
@@ -132,7 +141,33 @@ dots_and_boxes_move_generator::operator bool() const
     assert(*this);
     assert(_location < n_rows*(n_cols + 1) + n_cols(n_rows +1));
 
-    return 
+    return 0x20000000 | _location;
+
+}
+
+void dots_and_boxes_move_generator::_next_move()
+{
+
+    assert(*this);
+
+    int n_rows = _game.shape.first, n_cols = _game.shape.second;
+
+
+    _has_move = false;
+
+    if(++_location >= n_rows*(n_cols + 1) + n_cols(n_rows + 1))
+        return;
+
+    while(true){
+
+
+        if(_location < n_rows*(n_cols + 1) + n_cols(n_rows + 1)){
+            
+        }
+
+
+    }
+
 
 }
 
@@ -158,9 +193,9 @@ dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game
 {
     dots_and_boxes_state state = string_to_board(game_as_string);
 
-    // make sure the moves will fit into the 30 bits we get to control in the move
+    // make sure the moves will fit into the 29 bits we use for position of the move
     int n_rows = state.shape.first, n_cols = state.shape.second;
-    assert(n_rows*(n_cols + 1) + n_cols(n_rows + 1) < 1073741824);
+    assert(n_rows*(n_cols + 1) + n_cols(n_rows + 1) < 536870912); // 536870912 = 2^29
 
     _horizontal = state.horizontal;
     _vertical = state.vertical;
