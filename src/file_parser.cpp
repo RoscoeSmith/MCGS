@@ -820,4 +820,7 @@ void file_parser::_init_game_parsers()
     _add_game_parser("clobber", new basic_parser<clobber>());
 
     _add_game_parser("kayles", new int_parser<kayles>());
+
+    // score-counting games
+    _add_game_parser("dots_and_boxes", new basic_parser<dots_and_boxes>());
 }

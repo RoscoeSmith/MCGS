@@ -8,16 +8,17 @@
 #include <ostream>
 
 
-enum class box_value : unsigned char {
-    EMPTY = 0,
-    LEFT = 2,
-    RIGHT = 3
-};
+// enum class box_value : unsigned char {
+//     EMPTY = 0,
+//     LEFT = 2,
+//     RIGHT = 3
+// };
 
 class dots_and_boxes : public scoring_game
 {
 public:
     dots_and_boxes(int n_rows, int n_cols);
+    dots_and_boxes(const std::string& game_as_string)
 
     void play(const Move& m, bw to_play) override;
     void undo_move() override;
@@ -36,12 +37,20 @@ protected:
 
 
 private:
-
     int _left_score;
     int _right_score;
 
     std::vector<bool> _vertical;
     std::vector<bool> _horizontal;
-    std::vector<box_value> _boxes;
+    std::vector<int> _boxes;
 
+    int_pair _shape;
+};
+
+struct dots_and_boxes_state
+{
+    std::vector<bool> horizontal;
+    std::vector<bool> vertical;
+    std::vector<int> boxes;
+    int_pair shape;
 }
