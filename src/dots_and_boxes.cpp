@@ -183,7 +183,9 @@ void dots_and_boxes_move_generator::_next_move()
 
     assert(*this);
 
-    int n_rows = _game.shape.first, n_cols = _game.shape.second, local_location;
+    int n_rows = _game.shape.first, n_cols = _game.shape.second;
+
+    bool is_played;
 
     _has_move = false;
 
@@ -192,7 +194,9 @@ void dots_and_boxes_move_generator::_next_move()
 
     while(true){
 
-        if()
+        if(_location >= n_rows*(n_cols + 1)){
+            is_played = 
+        }
 
         if(_location < n_rows*(n_cols + 1) + n_cols(n_rows + 1) && /* this move hasn't been played*/)
         {
@@ -252,6 +256,16 @@ dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game
         std::cout << "  " << int(x)
     }
     std::cout << std::endl;
+}
+
+game* dots_and_boxes::inverse() const
+{
+    assert(false);
+}
+
+int dots_and_boxes::count_score() const
+{
+    return _left_score - _right_score;
 }
 
 int dots_and_boxes::get_total_moves(int& rows = n_rows, int& cols = n_cols) const
