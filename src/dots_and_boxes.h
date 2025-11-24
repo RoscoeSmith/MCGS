@@ -21,6 +21,8 @@ public:
 
     move_generator* create_move_generator(bw to_play) const override;
 
+    bool has_been_played(int position) const;
+
     void print(std::ostream& str) const override;
 
     game* inverse() const override;
