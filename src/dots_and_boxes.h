@@ -52,9 +52,9 @@ private:
 };
 
 struct dots_and_boxes_state
-{
-    std::vector<bool> horizontal;
+{    
     std::vector<bool> vertical;
+    std::vector<bool> horizontal;
     std::vector<int> boxes;
     int_pair shape;
 };

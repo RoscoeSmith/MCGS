@@ -106,7 +106,7 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
     }
 
     int_pair shape = {n_rows, n_cols};
-    return {horizontal, vertical, boxes, shape};
+    return {vertical, horizontal, boxes, shape};
 }
 
 std::string board_to_string(const std::vector<bool>& horizontal,const std::vector<bool>& vertical, const std::vector<int>& boxes, const int_pair shape)
