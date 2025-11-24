@@ -30,6 +30,8 @@ public:
     int count_score() const override;
 
     const int_pair get_shape() const;
+    std::string board_as_string() const;
+    std::string pretty_print() const;
 
 protected:
 
