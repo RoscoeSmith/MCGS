@@ -159,8 +159,6 @@ private:
 
     void _next_move();
     
-    bool _increment();
-
     const dots_and_boxes& _game;
 
     int _location;
@@ -200,7 +198,10 @@ dots_and_boxes_move_generator::operator bool() const
     assert(_location < get_total_moves(n_rows, n_cols));
 
     // first check if the move is a capture move
-
+    if(_location < n_rows*(n_cols + 1)) // vertical move 
+    {
+        
+    }
 
 
 
@@ -215,13 +216,15 @@ void dots_and_boxes_move_generator::_next_move()
 
     _has_move = false;
 
-    if(++_location >= get_total_moves(n_rows, n_cols))
+    if(_location >= get_total_moves(n_rows, n_cols))
         return;
 
-    while(true){
+    while(_location < get_total_moves(n_rows, n_cols))
+    {
 
-        if(_location < get_total_moves(n_rows, n_cols) || !has_been_played(_location))
+        if(!has_been_played(_location))
         {
+            _has_move = true;
             break;
         }
 
