@@ -281,7 +281,7 @@ void dots_and_boxes_move_generator::_next_move()
 dots_and_boxes::dots_and_boxes(int n_rows, int n_cols) : scoring_game()
 {
 
-    assert(get_total_moves(n_rows, n_cols) < 1073741824); // otherwise the move won't fit
+    assert(get_total_moves(n_rows, n_cols) < 536870912); // otherwise the move won't fit
 
     _horizontal = std::vector<bool>(n_cols * (n_rows + 1), false);
     _vertical = std::vector<bool>(n_rows * (n_cols + 1), false);
