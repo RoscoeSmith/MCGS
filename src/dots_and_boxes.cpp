@@ -238,7 +238,6 @@ void dots_and_boxes_move_generator::_next_move()
 
     }
 
-
 }
 
 
