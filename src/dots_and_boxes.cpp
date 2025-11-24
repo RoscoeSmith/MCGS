@@ -24,6 +24,7 @@ namespace {
 const int LINE_SEP = 3;
 const int DIM_SEP = 4;
 
+// gets the no. of possible edge move for a given board shape
 const int get_total_moves(const int& rows, const int& cols)
 {
     return rows * (cols + 1) + cols * (rows + 1);
@@ -31,7 +32,7 @@ const int get_total_moves(const int& rows, const int& cols)
 
 void check_is_valid_char(char c)
 {
-    THROW_ASSERT(c == 'X' || c == 'O' || c == '.' || c == '$' || c == '|');
+    THROW_ASSERT(c == 'X' || c == 'O' || c == '.' || c == '#' || c == '|');
 }
 
 int char_to_color(char c)
@@ -44,7 +45,7 @@ int char_to_color(char c)
         return EMPTY;
     else if (c == '|')
         return LINE_SEP;
-    else if (c == '$')
+    else if (c == '#')
         return DIM_SEP;
     else
         assert(false);
@@ -55,7 +56,7 @@ int char_to_color(char c)
 
 int color_to_char(int color)
 {
-    static char db_char[] = {'X', 'O', '.', '|', '$'};
+    static char db_char[] = {'X', 'O', '.', '|', '#'};
 
     assert_range(color, BLACK, DIM_SEP + 1);
     return db_char[color];
@@ -340,6 +341,6 @@ void dots_and_boxes::undo_move()
 
 void dots_and_boxes::print(std::ostream& str) const
 {
-    
+    str << "dots_and_boxes:" << board_as_string();
 }
 
