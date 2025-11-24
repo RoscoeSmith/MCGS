@@ -194,20 +194,59 @@ dots_and_boxes_move_generator::operator bool() const
 
     int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second;
 
+    bool is_capture = false;
+
     assert(*this);
     assert(_location < get_total_moves(n_rows, n_cols));
 
     // first check if the move is a capture move
     if(_location < n_rows*(n_cols + 1)) // vertical move 
     {
-        
+        if(_location % (n_cols + 1) == 0) // on the left side of the board only need to check box to the right
+        {
+            if()
+                is_capture = true
+
+        }
+        else if(_location % (n_cols + 1) == n_cols) // on the right side of the board only need to check box to the left
+        {
+            if()
+                is_capture = true
+        }
+        else // in the middle somewhere need to check both
+        {
+            if()
+                is_capture = true
+        }
     }
     else // horizontal move, no more checks necessary since assert passed
     {
+        if((_location - n_rows*(n_cols + 1)) < n_cols) // on the top side of the board only need to check box below
+        {
+            if()
+                is_capture = true
 
+        }
+        else if((_location - n_rows*(n_cols + 1)) >= n_rows*n_cols) // on the bottom of the board only need to check box above
+        {
+            if()
+                is_capture = true
+        }
+        else // in the middle somewhere need to check both
+        {
+            if()
+                is_capture = true
+        }
     }
 
-
+    if(is_capture)
+    {
+        return 0x20000000 | _location;
+    }
+    else
+    {
+        return _location
+    }
 
 }
 
