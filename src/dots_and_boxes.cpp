@@ -202,6 +202,10 @@ dots_and_boxes_move_generator::operator bool() const
     {
         
     }
+    else // horizontal move, no more checks necessary since assert passed
+    {
+
+    }
 
 
 
