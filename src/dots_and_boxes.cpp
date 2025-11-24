@@ -336,7 +336,7 @@ bool dots_and_boxes::has_been_played(int position) const{
 
     int n_rows = _game.shape.first, n_cols = _game.shape.second;
 
-    assert(position < n_rows*(n_cols + 1) + n_cols(n_rows +1));
+    assert(position < get_total_moves(n_rows, n_cols));
 
     if(position < n_rows*(n_cols + 1))
     {
@@ -402,20 +402,15 @@ std::string dots_and_boxes::pretty_print() const
         // add horizontal lines
         for (int c = 0; c < _shape.second; c++)
         {
-            result += u'·';
+            result += '*';
             if (_horizontal[r * _shape.second + c])
                 result += "---";
             else
                 result += "   ";
         }
-        result += u'·';
+        result += "*\n";
 
         // add vertical lines
-        // std::vector<bool> vlines;
-        // for (int i = 0; i < _shape.second + 1; i++)
-        // {
-        //     vlines.push_back(_vertical[i * _shape.first + r]);
-        // }
         for (int c = 0; c < _shape.second; c++)
         {
             if (_vertical[c * _shape.first + r])
@@ -426,26 +421,30 @@ std::string dots_and_boxes::pretty_print() const
             switch (_boxes[r * _shape.second + c])
             {
                 case BLACK:
-                    result += 'X';
+                    result += " X ";
                     break;
                 case WHITE:
-                    result += 'O';
+                    result += " O ";
                     break;
                 case EMPTY:
-                    result += ' ';
+                    result += "   ";
                     break;
             }
         }
-        result += _vertical[_shape.second * _shape.first + r] ? '|' : ' ';
-        for (int c = 0; c < _shape.second; c++)
-        {
-            result += u'·';
-            if (_horizontal[_shape.first * _shape.second + c])
-                result += "---";
-            else
-                result += "   ";
-        }
-        result += u'·';
+        if (_vertical[_shape.second * _shape.first + r])
+            result += "|\n";
+        else
+            result += " \n";
     }
+    for (int c = 0; c < _shape.second; c++)
+    {
+        result += '*';
+        if (_horizontal[_shape.first * _shape.second + c])
+            result += "---";
+        else
+            result += "   ";
+    }
+    result += '*';
+
     return result;
 }
