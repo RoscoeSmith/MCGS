@@ -341,8 +341,68 @@ void dots_and_boxes::undo_move()
     
 }
 
+std::string dots_and_boxes::board_as_string() const
+{
+    board_to_string(_horizontal, _vertical, _boxes, _shape);
+}
+
 void dots_and_boxes::print(std::ostream& str) const
 {
     str << "dots_and_boxes:" << board_as_string();
 }
 
+std::string dots_and_boxes::pretty_print() const
+{
+    std::string result;
+    for (int r = 0; r < _shape.first; r++)
+    {
+        // add horizontal lines
+        for (int c = 0; c < _shape.second; c++)
+        {
+            result += u'·';
+            if (_horizontal[r * _shape.second + c])
+                result += "---";
+            else
+                result += "   ";
+        }
+        result += u'·';
+
+        // add vertical lines
+        // std::vector<bool> vlines;
+        // for (int i = 0; i < _shape.second + 1; i++)
+        // {
+        //     vlines.push_back(_vertical[i * _shape.first + r]);
+        // }
+        for (int c = 0; c < _shape.second; c++)
+        {
+            if (_vertical[c * _shape.first + r])
+                result += '|';
+            else
+                result += ' ';
+            // add box color
+            switch (_boxes[r * _shape.second + c])
+            {
+                case BLACK:
+                    result += 'X';
+                    break;
+                case WHITE:
+                    result += 'O';
+                    break;
+                case EMPTY:
+                    result += ' ';
+                    break;
+            }
+        }
+        result += _vertical[_shape.second * _shape.first + r] ? '|' : ' ';
+        for (int c = 0; c < _shape.second; c++)
+        {
+            result += u'·';
+            if (_horizontal[_shape.first * _shape.second + c])
+                result += "---";
+            else
+                result += "   ";
+        }
+        result += u'·';
+    }
+    return result;
+}
