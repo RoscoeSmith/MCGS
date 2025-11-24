@@ -7,6 +7,8 @@
 #include <vector>
 #include <ostream>
 
+// (row, col)
+typedef std::pair<int, int> int_pair;
 
 class dots_and_boxes : public scoring_game
 {
@@ -14,7 +16,7 @@ public:
     dots_and_boxes(int n_rows, int n_cols); // for new game
     dots_and_boxes(const std::string& game_as_string); // for game as string
 
-    void play(const Move& m, bw to_play) override;
+    void play(const move& m, bw to_play) override;
     void undo_move() override;
 
     move_generator* create_move_generator(bw to_play) const override;
@@ -25,13 +27,15 @@ public:
 
     int count_score() const override;
 
+    const int_pair get_shape() const;
+
 protected:
 
     void _init_hash(local_hash& hash) const override;
 
 
 private:
-    int _get_total_moves(int& rows, int& cols);
+    const int _get_total_moves() const;
 
     int _left_score;
     int _right_score;
@@ -49,4 +53,4 @@ struct dots_and_boxes_state
     std::vector<bool> vertical;
     std::vector<int> boxes;
     int_pair shape;
-}
+};
