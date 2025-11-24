@@ -336,7 +336,7 @@ bool dots_and_boxes::has_been_played(int position) const{
 
     int n_rows = _game.shape.first, n_cols = _game.shape.second;
 
-    assert(position < n_rows*(n_cols + 1) + n_cols(n_rows +1));
+    assert(position < get_total_moves(n_rows, n_cols));
 
     if(position < n_rows*(n_cols + 1))
     {
