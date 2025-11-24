@@ -356,20 +356,15 @@ std::string dots_and_boxes::pretty_print() const
         // add horizontal lines
         for (int c = 0; c < _shape.second; c++)
         {
-            result += u'·';
+            result += '*';
             if (_horizontal[r * _shape.second + c])
                 result += "---";
             else
                 result += "   ";
         }
-        result += u'·';
+        result += "*\n";
 
         // add vertical lines
-        // std::vector<bool> vlines;
-        // for (int i = 0; i < _shape.second + 1; i++)
-        // {
-        //     vlines.push_back(_vertical[i * _shape.first + r]);
-        // }
         for (int c = 0; c < _shape.second; c++)
         {
             if (_vertical[c * _shape.first + r])
@@ -380,26 +375,30 @@ std::string dots_and_boxes::pretty_print() const
             switch (_boxes[r * _shape.second + c])
             {
                 case BLACK:
-                    result += 'X';
+                    result += " X ";
                     break;
                 case WHITE:
-                    result += 'O';
+                    result += " O ";
                     break;
                 case EMPTY:
-                    result += ' ';
+                    result += "   ";
                     break;
             }
         }
-        result += _vertical[_shape.second * _shape.first + r] ? '|' : ' ';
-        for (int c = 0; c < _shape.second; c++)
-        {
-            result += u'·';
-            if (_horizontal[_shape.first * _shape.second + c])
-                result += "---";
-            else
-                result += "   ";
-        }
-        result += u'·';
+        if (_vertical[_shape.second * _shape.first + r])
+            result += "|\n";
+        else
+            result += " \n";
     }
+    for (int c = 0; c < _shape.second; c++)
+    {
+        result += '*';
+        if (_horizontal[_shape.first * _shape.second + c])
+            result += "---";
+        else
+            result += "   ";
+    }
+    result += '*';
+
     return result;
 }
