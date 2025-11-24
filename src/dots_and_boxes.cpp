@@ -68,6 +68,8 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
     std::vector<bool> vertical, horizontal;
     std::vector<int> boxes;
     int n_rows = 0, n_cols = 0, dim = 0;
+    int n_rows_c = 0, n_cols_c = 0;
+    int n_rows_a = 0, n_cols_a = 0;
 
     for (const char& c : game_as_string)
     {
@@ -78,10 +80,28 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
             if (dim == 0)
             {
                 n_rows++;
+                if (n_cols_a == 0)
+                {
+                    n_cols_a = n_cols_c;
+                }
+                else
+                {
+                    assert(n_cols_a == n_cols_c);
+                }
+                n_cols_c = 0;
             }
             else if (dim == 1)
             {
                 n_cols++;
+                if (n_rows_a == 0)
+                {
+                    n_rows_a = n_rows_c;
+                }
+                else
+                {
+                    assert(n_rows_a == n_rows_c);
+                }
+                n_rows_c = 0;
             }
         }
         else if (color == DIM_SEP)
@@ -93,10 +113,12 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
             if (dim == 0)
             {
                 horizontal.push_back(color != EMPTY);
+                n_cols_c++;
             }
             else if (dim == 1)
             {
                 vertical.push_back(color != EMPTY);
+                n_rows_c++;
             }
             else if (dim == 2)
             {
@@ -104,6 +126,12 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
             }
         }
     }
+
+    assert(n_rows == n_rows_a);
+    assert(n_cols == n_cols_a);
+    assert(horizontal.size() == n_cols * (n_rows + 1));
+    assert(vertical.size() == n_rows * (n_cols + 1));
+    assert(boxes.size() == n_rows * n_cols);
 
     int_pair shape = {n_rows, n_cols};
     return {vertical, horizontal, boxes, shape};
