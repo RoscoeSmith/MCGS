@@ -312,7 +312,6 @@ dots_and_boxes::dots_and_boxes(int n_rows, int n_cols) : scoring_game()
 
 dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game()
 {
-    std::cout << "in d&b string constructor" << std::endl;
     dots_and_boxes_state state = string_to_board(game_as_string);
 
     // make sure the moves will fit into the 29 bits we use for position of the move
@@ -324,22 +323,7 @@ dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game
     _boxes = state.boxes;
     _shape = state.shape;
 
-    std::cout << "got state\nhorizontal array:" << std::endl;
-    for (auto x : _horizontal)
-    {
-        std::cout << "  " << int(x);
-    }
-    std::cout << std::endl << "vertical array:" << std::endl;
-    for (auto x : _vertical)
-    {
-        std::cout << "  " << int(x);
-    }
-    std::cout << std::endl << "boxes array:" << std::endl;
-    for (auto x : _boxes)
-    {
-        std::cout << "  " << int(x);
-    }
-    std::cout << std::endl;
+    _assert_valid_state();
 }
 
 move_generator* dots_and_boxes::create_move_generator(bw to_play) const
@@ -472,4 +456,15 @@ const int dots_and_boxes::_get_edge_count(const int& row, const int& col) const
            static_cast<int>(_vertica)l.at((col + 1) * _shape.first +) row);
 }
 
-
+void dots_and_boxes::_assert_valid_state() const {
+    for (int r = 0; r < _shape.first; r++)
+    {
+        for (int c = 0; c < _shape.first; c++)
+        {
+            if (_boxes.at(r * _shape.second + c))
+                assert(_get_edge_count(r, c) == 4);
+            else
+                assert(_get_edge_count(r, c) < 4);
+        }
+    }
+}
