@@ -463,3 +463,13 @@ std::string dots_and_boxes::pretty_print() const
 
     return result;
 }
+
+const int dots_and_boxes::_get_edge_count(const int& row, const int& col) const
+{
+    return static_cast<int>(_horizontal.at(row * _shape.second + col)) +
+           static_cast<int>(_horizontal.at((row + 1) * _shape.second + col)) +
+           static_cast<int>(_vertical.at(col * _shape.first + row) +
+           static_cast<int>(_vertica)l.at((col + 1) * _shape.first +) row);
+}
+
+

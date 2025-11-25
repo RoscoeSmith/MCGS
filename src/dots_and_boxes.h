@@ -40,6 +40,7 @@ protected:
 
 private:
     const int _get_total_moves() const;
+    const int _get_edge_count(const int& row, const int& col) const;
 
     int _left_score;
     int _right_score;
