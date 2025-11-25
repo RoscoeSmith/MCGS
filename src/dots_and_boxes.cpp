@@ -220,7 +220,7 @@ dots_and_boxes_move_generator::operator bool() const
 ::move dots_and_boxes_move_generator::gen_move() const
 {
 
-    int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second;
+    int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second, horizontal_location = _location - n_rows*(n_cols + 1);
 
     bool is_capture = false;
 
@@ -230,40 +230,27 @@ dots_and_boxes_move_generator::operator bool() const
     // first check if the move is a capture move
     if(_location < n_rows*(n_cols + 1)) // vertical move 
     {
-        if(_location % (n_cols + 1) == 0) // on the left side of the board only need to check box to the right
+        if(_location % (n_cols + 1) > 0) // not on the left side of the board, can check box to the left
         {
-            if()
-                is_capture = true
+            is_capture = has_been_played(_location - 1) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1)) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + n_cols);
+        }
+        
+        if(_location % (n_cols + 1) < n_cols) // not on the right side of the board, can check the box to the right
+        {
+            is_capture = has_been_played(_location + 1) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + 1) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + (n_cols + 1));
+        }
 
-        }
-        else if(_location % (n_cols + 1) == n_cols) // on the right side of the board only need to check box to the left
-        {
-            if()
-                is_capture = true
-        }
-        else // in the middle somewhere need to check both
-        {
-            if()
-                is_capture = true
-        }
     }
     else // horizontal move, no more checks necessary since assert passed
     {
-        if((_location - n_rows*(n_cols + 1)) < n_cols) // on the top side of the board only need to check box below
+        if((_location - n_rows*(n_cols + 1)) >= n_cols) // not on the top side of the board, can check the box above
         {
-            if()
-                is_capture = true
-
+            is_capture = has_been_played(_location - n_cols) && has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1)) && has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1) + 1);
         }
-        else if((_location - n_rows*(n_cols + 1)) >= n_rows*n_cols) // on the bottom of the board only need to check box above
+        
+        if((_location - n_rows*(n_cols + 1)) < n_rows*n_cols) // not on the bottom of the board, can check box below
         {
-            if()
-                is_capture = true
-        }
-        else // in the middle somewhere need to check both
-        {
-            if()
-                is_capture = true
+            is_capture = has_been_played(_location + n_cols) && has_been_played(horizontal_location + (horizontal_location/n_cols)) && has_been_played(horizontal_location + (horizontal_location/n_cols) + 1);
         }
     }
 
