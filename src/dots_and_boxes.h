@@ -7,6 +7,8 @@
 #include <vector>
 #include <ostream>
 
+#define MOVE_LIMIT 268435456 
+
 // (row, col)
 typedef std::pair<int, int> int_pair;
 

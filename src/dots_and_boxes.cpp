@@ -1,6 +1,7 @@
 #include "dots_and_boxes.h"
 #include "game.h"
 #include "scoring_game.h"
+#include "cgt_move.h"
 
 
 #include <vector>
@@ -14,8 +15,8 @@
 for dots and boxes the moves will be structurd as follows:
     bit 31 = color bit (fromt cgt_move)
     bit 30 = sign bit (fromt cgt_move)
-    bit 29 = capture bit
-    bits 0-28 position indicating which line we are placing
+    bits 28-29 = capture bits (0, 1, or 2 boxes captured)
+    bits 0-27 position indicating which line we are placing
 */
 
 //---------------------------------------------------------------------------
@@ -222,7 +223,7 @@ dots_and_boxes_move_generator::operator bool() const
 
     int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second, horizontal_location = _location - n_rows*(n_cols + 1);
 
-    bool is_capture = false;
+    int num_captures = 0;
 
     assert(*this);
     assert(_location < get_total_moves(n_rows, n_cols));
@@ -232,12 +233,14 @@ dots_and_boxes_move_generator::operator bool() const
     {
         if(_location % (n_cols + 1) > 0) // not on the left side of the board, can check box to the left
         {
-            is_capture = has_been_played(_location - 1) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1)) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + n_cols);
+            if(has_been_played(_location - 1) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1)) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + n_cols))
+                num_captures ++;
         }
         
         if(_location % (n_cols + 1) < n_cols) // not on the right side of the board, can check the box to the right
         {
-            is_capture = has_been_played(_location + 1) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + 1) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + (n_cols + 1));
+            if(has_been_played(_location + 1) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + 1) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + (n_cols + 1)))
+                num_captures ++;
         }
 
     }
@@ -245,23 +248,18 @@ dots_and_boxes_move_generator::operator bool() const
     {
         if((_location - n_rows*(n_cols + 1)) >= n_cols) // not on the top side of the board, can check the box above
         {
-            is_capture = has_been_played(_location - n_cols) && has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1)) && has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1) + 1);
+            if(has_been_played(_location - n_cols) && has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1)) && has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1) + 1))
+                num_captures++
         }
         
         if((_location - n_rows*(n_cols + 1)) < n_rows*n_cols) // not on the bottom of the board, can check box below
         {
-            is_capture = has_been_played(_location + n_cols) && has_been_played(horizontal_location + (horizontal_location/n_cols)) && has_been_played(horizontal_location + (horizontal_location/n_cols) + 1);
+            if(has_been_played(_location + n_cols) && has_been_played(horizontal_location + (horizontal_location/n_cols)) && has_been_played(horizontal_location + (horizontal_location/n_cols) + 1))
+                num_captures ++;
         }
     }
 
-    if(is_capture)
-    {
-        return 0x20000000 | _location;
-    }
-    else
-    {
-        return _location
-    }
+    return (num_captures << 28) | _location;
 
 }
 
@@ -296,7 +294,7 @@ void dots_and_boxes_move_generator::_next_move()
 dots_and_boxes::dots_and_boxes(int n_rows, int n_cols) : scoring_game()
 {
 
-    assert(get_total_moves(n_rows, n_cols) < 536870912); // otherwise the move won't fit
+    assert(get_total_moves(n_rows, n_cols) < MOVE_LIMIT);
     
     _vertical = std::vector<bool>(n_rows * (n_cols + 1), false);
     _horizontal = std::vector<bool>(n_cols * (n_rows + 1), false);
@@ -316,7 +314,7 @@ dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game
 
     // make sure the moves will fit into the 29 bits we use for position of the move
     int n_rows = state.shape.first, n_cols = state.shape.second;
-    assert(get_total_moves(n_rows, n_cols) < 536870912); // 536870912 = 2^29
+    assert(get_total_moves(n_rows, n_cols) < MOVE_LIMIT);
 
     _horizontal = state.horizontal;
     _vertical = state.vertical;
@@ -333,7 +331,7 @@ move_generator* dots_and_boxes::create_move_generator(bw to_play) const
 
 bool dots_and_boxes::has_been_played(int position) const{
 
-    int n_rows = _game.shape.first, n_cols = _game.shape.second;
+    int n_rows = _shape.first, n_cols = _shape.second;
 
     assert(position < get_total_moves(n_rows, n_cols));
 
@@ -375,12 +373,64 @@ void dots_and_boxes::_init_hash(local_hash& hash) const
 
 void dots_and_boxes::play(const move& m, bw to_play)
 {
-    
+    game::play(m, to_play);
+
+    int pos = m & (MOVE_LIMIT - 1);
+    int num_captures = (m >> 28) & 3;
+
+    if(pos < _vertical.size())
+    {
+        assert(!_vertical.at(pos));
+        _vertical.at(pos) = true;
+    }
+    else
+    {
+        assert(!_horizontal.at(pos - _vertical.size()));
+        _horizontal.at(pos - _vertical.size()) = true;
+    }
+
+    if(to_play == BLACK)
+    {        
+        _right_score += num_captures;
+    }
+    else
+    {        
+        _left_score += num_captures;
+    }
+
 }
 
 void dots_and_boxes::undo_move()
 {
-    
+    ::move m = last_move();
+    game::undo_move();
+
+    bw to_play = cgt_move::get_color(m);
+
+    int pos = m & (MOVE_LIMIT - 1);
+    int num_captures = (m >> 28) & 3;
+
+    if(pos < _vertical.size())
+    {
+        assert(_vertical.at(pos));
+        _vertical.at(pos) = false;
+    }
+    else
+    {
+        assert(_horizontal.at(pos - _vertical.size()));
+        _horizontal.at(pos - _vertical.size()) = false;
+    }
+
+    if(to_play == BLACK)
+    {
+        _right_score -= num_captures;
+    }
+    else
+    {
+        _left_score -= num_captures;
+    }
+
+
 }
 
 std::string dots_and_boxes::board_as_string() const
