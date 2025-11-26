@@ -249,7 +249,7 @@ dots_and_boxes_move_generator::operator bool() const
         if((_location - n_rows*(n_cols + 1)) >= n_cols) // not on the top side of the board, can check the box above
         {
             if(_game.has_been_played(_location - n_cols) && _game.has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1)) && _game.has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1) + 1))
-                num_captures++
+                num_captures++;
         }
         
         if((_location - n_rows*(n_cols + 1)) < n_rows*n_cols) // not on the bottom of the board, can check box below
@@ -278,7 +278,7 @@ void dots_and_boxes_move_generator::_next_move()
     while(_location < get_total_moves(n_rows, n_cols))
     {
 
-        if(!has_been_played(_location))
+        if(!_game.has_been_played(_location))
         {
             _has_move = true;
             break;
