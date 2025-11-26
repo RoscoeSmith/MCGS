@@ -233,13 +233,13 @@ dots_and_boxes_move_generator::operator bool() const
     {
         if(_location % (n_cols + 1) > 0) // not on the left side of the board, can check box to the left
         {
-            if(has_been_played(_location - 1) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1)) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + n_cols))
+            if(_game.has_been_played(_location - 1) && _game.has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1)) && _game.has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + n_cols))
                 num_captures ++;
         }
         
         if(_location % (n_cols + 1) < n_cols) // not on the right side of the board, can check the box to the right
         {
-            if(has_been_played(_location + 1) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + 1) && has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + (n_cols + 1)))
+            if(_game.has_been_played(_location + 1) && _game.has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + 1) && _game.has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + (n_cols + 1)))
                 num_captures ++;
         }
 
@@ -248,13 +248,13 @@ dots_and_boxes_move_generator::operator bool() const
     {
         if((_location - n_rows*(n_cols + 1)) >= n_cols) // not on the top side of the board, can check the box above
         {
-            if(has_been_played(_location - n_cols) && has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1)) && has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1) + 1))
+            if(_game.has_been_played(_location - n_cols) && _game.has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1)) && _game.has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1) + 1))
                 num_captures++
         }
         
         if((_location - n_rows*(n_cols + 1)) < n_rows*n_cols) // not on the bottom of the board, can check box below
         {
-            if(has_been_played(_location + n_cols) && has_been_played(horizontal_location + (horizontal_location/n_cols)) && has_been_played(horizontal_location + (horizontal_location/n_cols) + 1))
+            if(_game.has_been_played(_location + n_cols) && _game.has_been_played(horizontal_location + (horizontal_location/n_cols)) && _game.has_been_played(horizontal_location + (horizontal_location/n_cols) + 1))
                 num_captures ++;
         }
     }
@@ -429,7 +429,6 @@ void dots_and_boxes::undo_move()
     {
         _left_score -= num_captures;
     }
-
 
 }
 
