@@ -221,9 +221,7 @@ dots_and_boxes_move_generator::operator bool() const
 ::move dots_and_boxes_move_generator::gen_move() const
 {
 
-    int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second, horizontal_location = _location - n_rows*(n_cols + 1);
-
-    int num_captures = 0;
+    int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second, horizontal_location = _location - n_rows*(n_cols + 1), num_captures = 0;
 
     assert(*this);
     assert(_location < get_total_moves(n_rows, n_cols));
@@ -268,6 +266,8 @@ void dots_and_boxes_move_generator::_next_move(bool init)
 
     assert(init || *this);
 
+    std::cout << " in _next_move start " << _location << " " << _has_move << "\n" << _game.pretty_print() << std::endl;
+
     int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second;
 
     _has_move = false;
@@ -287,6 +287,13 @@ void dots_and_boxes_move_generator::_next_move(bool init)
         _location ++;
 
     }
+
+    std::cout << " in _next_move end " << _location << " " << _has_move << "\n\n" << std::endl;
+
+
+    if(_location > 14)
+        exit(0);
+
 
 }
 
@@ -315,11 +322,24 @@ dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game
     // make sure the moves will fit into the 29 bits we use for position of the move
     int n_rows = state.shape.first, n_cols = state.shape.second;
     assert(get_total_moves(n_rows, n_cols) < MOVE_LIMIT);
-
-    _horizontal = state.horizontal;
+    
     _vertical = state.vertical;
+    _horizontal = state.horizontal;
     _boxes = state.boxes;
     _shape = state.shape;
+
+    _left_score = 0;
+    _right_score = 0;
+
+    for(int& i : _boxes)
+        if(i == BLACK)
+        {
+            _left_score ++;
+        }
+        else if(i == WHITE)
+        {
+            _right_score ++;
+        }
 
     _assert_valid_state();
 }
@@ -376,17 +396,20 @@ void dots_and_boxes::_init_hash(local_hash& hash) const
 
     for(bool a : _vertical)
     {
-        hash.toggle_value(num_hashes++, static_cast<int>(a));
+        if(a)
+            hash.toggle_value(num_hashes++, static_cast<int>(a));
     }
 
     for(bool a : _horizontal)
     {
-        hash.toggle_value(num_hashes++, static_cast<int>(a));
+        if(a)
+            hash.toggle_value(num_hashes++, static_cast<int>(a));
     }
 
     for(bool a : _boxes)
     {
-        hash.toggle_value(num_hashes++, a);
+        if(a != EMPTY)
+            hash.toggle_value(num_hashes++, a);
     }
     
 }
@@ -398,6 +421,10 @@ void dots_and_boxes::play(const move& m, bw to_play)
 
     int pos = m & (MOVE_LIMIT - 1);
     int num_captures = (m >> 28) & 3;
+
+
+    std::cout << "in play start " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
+
 
     if(pos < _vertical.size())
     {
@@ -419,10 +446,13 @@ void dots_and_boxes::play(const move& m, bw to_play)
         _right_score += num_captures;
     }
 
+    std::cout << "in play end " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
+
 }
 
 void dots_and_boxes::undo_move()
 {
+
     ::move m = last_move();
     game::undo_move();
 
@@ -430,6 +460,9 @@ void dots_and_boxes::undo_move()
 
     int pos = m & (MOVE_LIMIT - 1);
     int num_captures = (m >> 28) & 3;
+
+    std::cout << "in undo start " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
+
 
     if(pos < _vertical.size())
     {
@@ -450,6 +483,8 @@ void dots_and_boxes::undo_move()
     {
         _right_score -= num_captures;
     }
+
+    std::cout << "in undo end " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
 
 }
 
