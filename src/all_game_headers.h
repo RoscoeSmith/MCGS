@@ -12,4 +12,6 @@
 #include "nogo.h"
 #include "clobber.h"
 #include "kayles.h"
+
+#include "dots_and_boxes.h"
 // IWYU pragma: end_exports
