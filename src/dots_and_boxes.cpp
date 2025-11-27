@@ -227,7 +227,7 @@ dots_and_boxes_move_generator::operator bool() const
     assert(_location < get_total_moves(n_rows, n_cols));
 
     // first check if the move is a capture move
-    if(_location < n_rows*(n_cols + 1)) // vertical move 
+    if(_location < n_rows*(n_cols + 1)) // vertical move
     {
         if(_location % (n_cols + 1) > 0) // not on the left side of the board, can check box to the left
         {
@@ -291,9 +291,9 @@ void dots_and_boxes_move_generator::_next_move(bool init)
     std::cout << " in _next_move end " << _location << " " << _has_move << "\n\n" << std::endl;
 
 
+
     if(_location > 14)
         exit(0);
-
 
 }
 
