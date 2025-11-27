@@ -368,11 +368,32 @@ const int_pair dots_and_boxes::get_shape() const
 
 void dots_and_boxes::_init_hash(local_hash& hash) const
 {
+
+    hash.toggle_value(0, _shape.first);
+    hash.toggle_value(1, _shape.second);
+
+    int num_hashes = 2;
+
+    for(bool a : _vertical)
+    {
+        hash.toggle_value(num_hashes++, static_cast<int>(a));
+    }
+
+    for(bool a : _horizontal)
+    {
+        hash.toggle_value(num_hashes++, static_cast<int>(a));
+    }
+
+    for(bool a : _boxes)
+    {
+        hash.toggle_value(num_hashes++, a);
+    }
     
 }
 
 void dots_and_boxes::play(const move& m, bw to_play)
 {
+
     game::play(m, to_play);
 
     int pos = m & (MOVE_LIMIT - 1);
@@ -391,11 +412,11 @@ void dots_and_boxes::play(const move& m, bw to_play)
 
     if(to_play == BLACK)
     {        
-        _right_score += num_captures;
+        _left_score += num_captures;
     }
     else
     {        
-        _left_score += num_captures;
+        _right_score += num_captures;
     }
 
 }
@@ -423,11 +444,11 @@ void dots_and_boxes::undo_move()
 
     if(to_play == BLACK)
     {
-        _right_score -= num_captures;
+        _left_score -= num_captures;
     }
     else
     {
-        _left_score -= num_captures;
+        _right_score -= num_captures;
     }
 
 }
