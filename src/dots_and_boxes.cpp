@@ -138,7 +138,7 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
     return {vertical, horizontal, boxes, shape};
 }
 
-std::string board_to_string(const std::vector<bool>& horizontal,const std::vector<bool>& vertical, const std::vector<int>& boxes, const int_pair shape)
+std::string board_to_string(const std::vector<bool>& horizontal,const std::vector<bool>& vertical, const std::vector<int>& boxes, const int_pair& shape)
 {
     std::string result;
     int n_rows = shape.first, n_cols = shape.second;
@@ -434,7 +434,7 @@ void dots_and_boxes::undo_move()
 
 std::string dots_and_boxes::board_as_string() const
 {
-    board_to_string(_horizontal, _vertical, _boxes, _shape);
+    return board_to_string(_horizontal, _vertical, _boxes, _shape);
 }
 
 void dots_and_boxes::print(std::ostream& str) const
@@ -508,9 +508,9 @@ const int dots_and_boxes::_get_edge_count(const int& row, const int& col) const
 void dots_and_boxes::_assert_valid_state() const {
     for (int r = 0; r < _shape.first; r++)
     {
-        for (int c = 0; c < _shape.first; c++)
+        for (int c = 0; c < _shape.second; c++)
         {
-            if (_boxes.at(r * _shape.second + c))
+            if (_boxes.at(r * _shape.second + c) != EMPTY)
                 assert(_get_edge_count(r, c) == 4);
             else
                 assert(_get_edge_count(r, c) < 4);
