@@ -186,7 +186,7 @@ public:
 
 private:
 
-    void _next_move();
+    void _next_move(bool init);
     
     const dots_and_boxes& _game;
 
@@ -203,14 +203,14 @@ dots_and_boxes_move_generator::dots_and_boxes_move_generator(const dots_and_boxe
 {
 
     if(_game.get_shape().first > 0 and _game.get_shape().second > 0)
-        _next_move();
+        _next_move(true);
     
 }
 
 void dots_and_boxes_move_generator::operator++()
 {
     assert(*this);
-    _next_move();
+    _next_move(false);
 }
 
 dots_and_boxes_move_generator::operator bool() const
@@ -263,10 +263,10 @@ dots_and_boxes_move_generator::operator bool() const
 
 }
 
-void dots_and_boxes_move_generator::_next_move()
+void dots_and_boxes_move_generator::_next_move(bool init)
 {
 
-    assert(*this);
+    assert(init || *this);
 
     int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second;
 
