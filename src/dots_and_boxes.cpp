@@ -587,7 +587,7 @@ std::string dots_and_boxes::pretty_print() const
         // add vertical lines
         for (int c = 0; c < _shape.second; c++)
         {
-            if (_vertical[c * _shape.first + r])
+            if (_vertical[r * (_shape.second + 1) + c])
                 result += '|';
             else
                 result += ' ';
@@ -605,7 +605,7 @@ std::string dots_and_boxes::pretty_print() const
                     break;
             }
         }
-        if (_vertical[_shape.second * _shape.first + r])
+        if (_vertical[r * (_shape.second + 1) + _shape.second])
             result += "|\n";
         else
             result += " \n";
