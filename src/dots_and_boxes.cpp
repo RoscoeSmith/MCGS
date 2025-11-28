@@ -198,6 +198,7 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
             }
         }
     }
+    n_rows++;
 
     // assert(n_rows == n_rows_a);
     // assert(n_cols == n_cols_a);
