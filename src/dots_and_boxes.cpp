@@ -63,6 +63,81 @@ int color_to_char(int color)
     return db_char[color];
 }
 
+// dots_and_boxes_state string_to_board(const std::string& game_as_string)
+// {
+//     using namespace std;
+//     std::vector<bool> vertical, horizontal;
+//     std::vector<int> boxes;
+//     int n_rows = 0, n_cols = 0, dim = 0;
+//     int n_rows_c = 0, n_cols_c = 0;
+//     int n_rows_a = 0, n_cols_a = 0;
+
+//     for (const char& c : game_as_string)
+//     {
+//         check_is_valid_char(c);
+//         int color = char_to_color(c);
+//         if (color == LINE_SEP)
+//         {
+//             if (dim == 0)
+//             {
+//                 n_rows++;
+//                 if (n_cols_a == 0)
+//                 {
+//                     n_cols_a = n_cols_c;
+//                 }
+//                 else
+//                 {
+//                     assert(n_cols_a == n_cols_c);
+//                 }
+//                 n_cols_c = 0;
+//             }
+//             else if (dim == 1)
+//             {
+//                 n_cols++;
+//                 if (n_rows_a == 0)
+//                 {
+//                     n_rows_a = n_rows_c;
+//                 }
+//                 else
+//                 {
+//                     assert(n_rows_a == n_rows_c);
+//                 }
+//                 n_rows_c = 0;
+//             }
+//         }
+//         else if (color == DIM_SEP)
+//         {
+//             dim++;
+//         }
+//         else
+//         {
+//             if (dim == 0)
+//             {
+//                 horizontal.push_back(color != EMPTY);
+//                 n_cols_c++;
+//             }
+//             else if (dim == 1)
+//             {
+//                 vertical.push_back(color != EMPTY);
+//                 n_rows_c++;
+//             }
+//             else if (dim == 2)
+//             {
+//                 boxes.push_back(color);
+//             }
+//         }
+//     }
+
+//     assert(n_rows == n_rows_a);
+//     assert(n_cols == n_cols_a);
+//     assert(horizontal.size() == n_cols * (n_rows + 1));
+//     assert(vertical.size() == n_rows * (n_cols + 1));
+//     assert(boxes.size() == n_rows * n_cols);
+
+//     int_pair shape = {n_rows, n_cols};
+//     return {vertical, horizontal, boxes, shape};
+// }
+
 dots_and_boxes_state string_to_board(const std::string& game_as_string)
 {
     using namespace std;
@@ -74,35 +149,32 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
 
     for (const char& c : game_as_string)
     {
+        std::cout << "on char: " << c << "\nhorizontal: ";
+        for (auto x : horizontal) {
+            std::cout << x << " ";
+        }
+        std::cout << "\nvertical: ";
+        for (auto x : vertical) {
+            std::cout << x << " ";
+        }
+        std::cout << "\nn_rows: " << n_rows << ", n_rows_c: " << n_rows_c << ", n_rows_a: " << n_rows_a; 
+        std::cout << "\nn_cols: " << n_cols << ", n_cols_c: " << n_cols_c << ", n_cols_a: " << n_cols_a; 
+        std::cout << std::endl;
         check_is_valid_char(c);
         int color = char_to_color(c);
         if (color == LINE_SEP)
         {
-            if (dim == 0)
+            if (dim == 0)  // vertical
             {
                 n_rows++;
-                if (n_cols_a == 0)
-                {
-                    n_cols_a = n_cols_c;
-                }
-                else
-                {
-                    assert(n_cols_a == n_cols_c);
-                }
-                n_cols_c = 0;
             }
-            else if (dim == 1)
+            else if (dim == 1)  // horizontal
             {
-                n_cols++;
-                if (n_rows_a == 0)
-                {
-                    n_rows_a = n_rows_c;
-                }
+                if (n_cols == 0)
+                    n_cols = n_cols_c;
                 else
-                {
-                    assert(n_rows_a == n_rows_c);
-                }
-                n_rows_c = 0;
+                    assert(n_cols == n_cols_c);
+                n_cols_c = 0;
             }
         }
         else if (color == DIM_SEP)
@@ -111,15 +183,14 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
         }
         else
         {
-            if (dim == 0)
+            if (dim == 0)  // vertical
+            {
+                vertical.push_back(color != EMPTY);
+            }
+            else if (dim == 1)  // horizontal
             {
                 horizontal.push_back(color != EMPTY);
                 n_cols_c++;
-            }
-            else if (dim == 1)
-            {
-                vertical.push_back(color != EMPTY);
-                n_rows_c++;
             }
             else if (dim == 2)
             {
@@ -128,8 +199,8 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
         }
     }
 
-    assert(n_rows == n_rows_a);
-    assert(n_cols == n_cols_a);
+    // assert(n_rows == n_rows_a);
+    // assert(n_cols == n_cols_a);
     assert(horizontal.size() == n_cols * (n_rows + 1));
     assert(vertical.size() == n_rows * (n_cols + 1));
     assert(boxes.size() == n_rows * n_cols);
@@ -265,7 +336,8 @@ dots_and_boxes_move_generator::operator bool() const
 
 void dots_and_boxes_move_generator::_next_move(bool init)
 {
-
+    std::cout << "in _next_move call" << std::endl;
+    
     assert(init || *this);
 
     int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second;
@@ -306,6 +378,7 @@ dots_and_boxes::dots_and_boxes(int n_rows, int n_cols) : scoring_game()
     _shape.first = n_rows;
     _shape.second = n_cols;
 
+
 }
 
 dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game()
@@ -322,6 +395,8 @@ dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game
     _shape = state.shape;
 
     _assert_valid_state();
+
+    std::cout << "pretty-printing...\n" << pretty_print() << std::endl;
 }
 
 move_generator* dots_and_boxes::create_move_generator(bw to_play) const
@@ -394,6 +469,7 @@ void dots_and_boxes::_init_hash(local_hash& hash) const
 void dots_and_boxes::play(const move& m, bw to_play)
 {
 
+    std::cout << "in play call" << std::endl;
     game::play(m, to_play);
 
     int pos = m & (MOVE_LIMIT - 1);
@@ -423,6 +499,7 @@ void dots_and_boxes::play(const move& m, bw to_play)
 
 void dots_and_boxes::undo_move()
 {
+    std::cout << "in undo_move call" << std::endl;
     ::move m = last_move();
     game::undo_move();
 
