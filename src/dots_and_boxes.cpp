@@ -364,9 +364,12 @@ void dots_and_boxes_move_generator::_next_move(bool init)
     std::cout << " in _next_move end " << _location << " " << _has_move << "\n\n" << std::endl;
 
 
-
+    /*
     if(_location > 14)
         exit(0);
+
+
+    */
 
 }
 
@@ -385,7 +388,6 @@ dots_and_boxes::dots_and_boxes(int n_rows, int n_cols) : scoring_game()
 
     _shape.first = n_rows;
     _shape.second = n_cols;
-
 
 }
 
