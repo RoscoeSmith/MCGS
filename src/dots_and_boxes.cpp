@@ -144,22 +144,14 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
     std::vector<bool> vertical, horizontal;
     std::vector<int> boxes;
     int n_rows = 0, n_cols = 0, dim = 0;
-    int n_rows_c = 0, n_cols_c = 0;
-    int n_rows_a = 0, n_cols_a = 0;
+    int n_cols_c = 0;
 
     for (const char& c : game_as_string)
     {
-        std::cout << "on char: " << c << "\nhorizontal: ";
         for (auto x : horizontal) {
-            std::cout << x << " ";
         }
-        std::cout << "\nvertical: ";
         for (auto x : vertical) {
-            std::cout << x << " ";
         }
-        std::cout << "\nn_rows: " << n_rows << ", n_rows_c: " << n_rows_c << ", n_rows_a: " << n_rows_a; 
-        std::cout << "\nn_cols: " << n_cols << ", n_cols_c: " << n_cols_c << ", n_cols_a: " << n_cols_a; 
-        std::cout << std::endl;
         check_is_valid_char(c);
         int color = char_to_color(c);
         if (color == LINE_SEP)
@@ -200,8 +192,7 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
     }
     n_rows++;
 
-    // assert(n_rows == n_rows_a);
-    // assert(n_cols == n_cols_a);
+    // post-construction error checking
     assert(horizontal.size() == n_cols * (n_rows + 1));
     assert(vertical.size() == n_rows * (n_cols + 1));
     assert(boxes.size() == n_rows * n_cols);
@@ -420,6 +411,8 @@ dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game
     _assert_valid_state();
 
     std::cout << "pretty-printing...\n" << pretty_print() << std::endl;
+
+    std::cout << "shape: " << _shape.first << ", " << _shape.second << std::endl;
 }
 
 move_generator* dots_and_boxes::create_move_generator(bw to_play) const
