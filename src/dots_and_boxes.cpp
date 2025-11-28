@@ -2,6 +2,7 @@
 #include "game.h"
 #include "scoring_game.h"
 #include "cgt_move.h"
+#include <unistd.h>
 
 
 #include <vector>
@@ -354,13 +355,10 @@ void dots_and_boxes_move_generator::_next_move(bool init)
 
     std::cout << " in _next_move end " << _location << " " << _has_move << "\n\n" << std::endl;
 
+    usleep(1000000);
 
-    /*
-    if(_location > 14)
-        exit(0);
-
-
-    */
+    // if(_location > 7)
+    //     exit(0);
 
 }
 
@@ -477,7 +475,7 @@ void dots_and_boxes::_init_hash(local_hash& hash) const
             hash.toggle_value(num_hashes++, static_cast<int>(a));
     }
 
-    for(bool a : _boxes)
+    for(int a : _boxes)
     {
         if(a != EMPTY)
             hash.toggle_value(num_hashes++, a);
