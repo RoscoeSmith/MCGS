@@ -35,15 +35,29 @@ public:
     std::string board_as_string() const;
     std::string pretty_print() const;
 
+    const bool left_capture(const int position) const;
+    const bool right_capture(const int position) const;
+    const bool up_capture(const int position) const;
+    const bool down_capture(const int position) const;
+
 protected:
 
     void _init_hash(local_hash& hash) const override;
 
 
 private:
+
     const int _get_total_moves() const;
+
     const int _get_edge_count(const int& position) const;
     const int _get_edge_count(const int& row, const int& col) const;
+
+    const bool _left_capture(const int position) const;
+    const bool _right_capture(const int position) const;
+    const bool _up_capture(const int position) const;
+    const bool _down_capture(const int position) const;
+
+
     void _assert_valid_state() const;
 
     int _left_score;
