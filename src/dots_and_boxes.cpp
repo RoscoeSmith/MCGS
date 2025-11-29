@@ -69,8 +69,8 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
 {
     std::vector<bool> vertical, horizontal;
     std::vector<int> boxes;
-    int n_rows = 0, n_cols = 0, dim = 0;
-    int n_cols_c = 0;
+    unsigned int n_rows = 0, n_cols = 0, dim = 0;
+    unsigned int n_cols_c = 0;
 
     if (game_as_string.at(0) == '@')
     {
@@ -89,15 +89,15 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
             }
         }
         n_cols = stoi(number);
-        for (int i = 0; i < n_rows * (n_cols + 1); i++)
+        for (unsigned int i = 0; i < n_rows * (n_cols + 1); i++)
         {
             vertical.push_back(false);
         }
-        for (int i = 0; i < n_cols * (n_rows + 1); i++)
+        for (unsigned int i = 0; i < n_cols * (n_rows + 1); i++)
         {
             horizontal.push_back(false);
         }
-        for (int i = 0; i < n_cols * n_rows; i++)
+        for (unsigned int i = 0; i < n_cols * n_rows; i++)
         {
             boxes.push_back(EMPTY);
         }
@@ -106,10 +106,6 @@ dots_and_boxes_state string_to_board(const std::string& game_as_string)
         // string parse mode
         for (const char& c : game_as_string)
         {
-            for (auto x : horizontal) {
-            }
-            for (auto x : vertical) {
-            }
             check_is_valid_char(c);
             int color = char_to_color(c);
             if (color == LINE_SEP)
@@ -443,7 +439,7 @@ void dots_and_boxes::play(const move& m, bw to_play)
     std::cout << "in play call" << std::endl;
     game::play(m, to_play);
 
-    int pos = m & (MOVE_LIMIT - 1);
+    unsigned int pos = m & (MOVE_LIMIT - 1);
     int num_captures = (m >> 28) & 3;
 
 
@@ -482,7 +478,7 @@ void dots_and_boxes::undo_move()
 
     bw to_play = cgt_move::get_color(m);
 
-    int pos = m & (MOVE_LIMIT - 1);
+    unsigned int pos = m & (MOVE_LIMIT - 1);
     int num_captures = (m >> 28) & 3;
 
     std::cout << "in undo start " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
