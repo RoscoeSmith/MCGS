@@ -10,6 +10,7 @@
 #include <string>
 #include <iostream>
 #include <cassert>
+#include <cctype>
 
 
 /*
@@ -64,134 +65,91 @@ int color_to_char(int color)
     return db_char[color];
 }
 
-// dots_and_boxes_state string_to_board(const std::string& game_as_string)
-// {
-//     using namespace std;
-//     std::vector<bool> vertical, horizontal;
-//     std::vector<int> boxes;
-//     int n_rows = 0, n_cols = 0, dim = 0;
-//     int n_rows_c = 0, n_cols_c = 0;
-//     int n_rows_a = 0, n_cols_a = 0;
-
-//     for (const char& c : game_as_string)
-//     {
-//         check_is_valid_char(c);
-//         int color = char_to_color(c);
-//         if (color == LINE_SEP)
-//         {
-//             if (dim == 0)
-//             {
-//                 n_rows++;
-//                 if (n_cols_a == 0)
-//                 {
-//                     n_cols_a = n_cols_c;
-//                 }
-//                 else
-//                 {
-//                     assert(n_cols_a == n_cols_c);
-//                 }
-//                 n_cols_c = 0;
-//             }
-//             else if (dim == 1)
-//             {
-//                 n_cols++;
-//                 if (n_rows_a == 0)
-//                 {
-//                     n_rows_a = n_rows_c;
-//                 }
-//                 else
-//                 {
-//                     assert(n_rows_a == n_rows_c);
-//                 }
-//                 n_rows_c = 0;
-//             }
-//         }
-//         else if (color == DIM_SEP)
-//         {
-//             dim++;
-//         }
-//         else
-//         {
-//             if (dim == 0)
-//             {
-//                 horizontal.push_back(color != EMPTY);
-//                 n_cols_c++;
-//             }
-//             else if (dim == 1)
-//             {
-//                 vertical.push_back(color != EMPTY);
-//                 n_rows_c++;
-//             }
-//             else if (dim == 2)
-//             {
-//                 boxes.push_back(color);
-//             }
-//         }
-//     }
-
-//     assert(n_rows == n_rows_a);
-//     assert(n_cols == n_cols_a);
-//     assert(horizontal.size() == n_cols * (n_rows + 1));
-//     assert(vertical.size() == n_rows * (n_cols + 1));
-//     assert(boxes.size() == n_rows * n_cols);
-
-//     int_pair shape = {n_rows, n_cols};
-//     return {vertical, horizontal, boxes, shape};
-// }
-
 dots_and_boxes_state string_to_board(const std::string& game_as_string)
 {
-    using namespace std;
     std::vector<bool> vertical, horizontal;
     std::vector<int> boxes;
     int n_rows = 0, n_cols = 0, dim = 0;
     int n_cols_c = 0;
 
-    for (const char& c : game_as_string)
+    if (game_as_string.at(0) == '@')
     {
-        for (auto x : horizontal) {
-        }
-        for (auto x : vertical) {
-        }
-        check_is_valid_char(c);
-        int color = char_to_color(c);
-        if (color == LINE_SEP)
+        // row,col mode
+        std::string number;
+        for (const char& c : game_as_string.substr(1))
         {
-            if (dim == 0)  // vertical
+            if (c == ',')
             {
-                n_rows++;
-            }
-            else if (dim == 1)  // horizontal
+                n_rows = stoi(number);
+                number = "";
+            } else
             {
-                if (n_cols == 0)
-                    n_cols = n_cols_c;
-                else
-                    assert(n_cols == n_cols_c);
-                n_cols_c = 0;
+                assert(isdigit(c));
+                number += c;
             }
         }
-        else if (color == DIM_SEP)
+        n_cols = stoi(number);
+        for (int i = 0; i < n_rows * (n_cols + 1); i++)
         {
-            dim++;
+            vertical.push_back(false);
         }
-        else
+        for (int i = 0; i < n_cols * (n_rows + 1); i++)
         {
-            if (dim == 0)  // vertical
-            {
-                vertical.push_back(color != EMPTY);
+            horizontal.push_back(false);
+        }
+        for (int i = 0; i < n_cols * n_rows; i++)
+        {
+            boxes.push_back(EMPTY);
+        }
+        
+    } else {
+        // string parse mode
+        for (const char& c : game_as_string)
+        {
+            for (auto x : horizontal) {
             }
-            else if (dim == 1)  // horizontal
-            {
-                horizontal.push_back(color != EMPTY);
-                n_cols_c++;
+            for (auto x : vertical) {
             }
-            else if (dim == 2)
+            check_is_valid_char(c);
+            int color = char_to_color(c);
+            if (color == LINE_SEP)
             {
-                boxes.push_back(color);
+                if (dim == 0)  // vertical
+                {
+                    n_rows++;
+                }
+                else if (dim == 1)  // horizontal
+                {
+                    if (n_cols == 0)
+                        n_cols = n_cols_c;
+                    else
+                        assert(n_cols == n_cols_c);
+                    n_cols_c = 0;
+                }
+            }
+            else if (color == DIM_SEP)
+            {
+                dim++;
+            }
+            else
+            {
+                if (dim == 0)  // vertical
+                {
+                    vertical.push_back(color != EMPTY);
+                }
+                else if (dim == 1)  // horizontal
+                {
+                    horizontal.push_back(color != EMPTY);
+                    n_cols_c++;
+                }
+                else if (dim == 2)
+                {
+                    boxes.push_back(color); 
+                }
             }
         }
+        n_rows++;
     }
-    n_rows++;
 
     // post-construction error checking
     assert(horizontal.size() == n_cols * (n_rows + 1));
