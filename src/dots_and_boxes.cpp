@@ -285,7 +285,7 @@ dots_and_boxes_move_generator::operator bool() const
 ::move dots_and_boxes_move_generator::gen_move() const
 {
 
-    int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second, horizontal_location = _location - n_rows*(n_cols + 1), num_captures = 0;
+    int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second, num_captures = 0;
 
     assert(*this);
     assert(_location < get_total_moves(n_rows, n_cols));
@@ -293,32 +293,19 @@ dots_and_boxes_move_generator::operator bool() const
     // first check if the move is a capture move
     if(_location < n_rows*(n_cols + 1)) // vertical move
     {
-        if(_location % (n_cols + 1) > 0) // not on the left side of the board, can check box to the left
-        {
-            if(_game.has_been_played(_location - 1) && _game.has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1)) && _game.has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + n_cols))
-                num_captures ++;
-        }
+        if(_location % (n_cols + 1) > 0 && _game.left_capture(_location)) // not on the left side of the board, can check box to the left
+            num_captures ++;
         
-        if(_location % (n_cols + 1) < n_cols) // not on the right side of the board, can check the box to the right
-        {
-            if(_game.has_been_played(_location + 1) && _game.has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + 1) && _game.has_been_played(_location + n_rows*(n_cols + 1) - (_location/(n_cols + 1) + 1) + (n_cols + 1)))
-                num_captures ++;
-        }
-
+        if(_location % (n_cols + 1) < n_cols && _game.right_capture(_location)) // not on the right side of the board, can check the box to the right
+            num_captures ++;
     }
     else // horizontal move, no more checks necessary since assert passed
     {
-        if((_location - n_rows*(n_cols + 1)) >= n_cols) // not on the top side of the board, can check the box above
-        {
-            if(_game.has_been_played(_location - n_cols) && _game.has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1)) && _game.has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1) + 1))
-                num_captures++;
-        }
+        if((_location - n_rows*(n_cols + 1)) >= n_cols && _game.up_capture(_location)) // not on the top side of the board, can check the box above
+            num_captures++;
         
-        if((_location - n_rows*(n_cols + 1)) < n_rows*n_cols) // not on the bottom of the board, can check box below
-        {
-            if(_game.has_been_played(_location + n_cols) && _game.has_been_played(horizontal_location + (horizontal_location/n_cols)) && _game.has_been_played(horizontal_location + (horizontal_location/n_cols) + 1))
-                num_captures ++;
-        }
+        if((_location - n_rows*(n_cols + 1)) < n_rows*n_cols && _game.down_capture(_location)) // not on the bottom of the board, can check box below
+            num_captures ++;
     }
 
     return (num_captures << 28) | _location;
@@ -630,6 +617,72 @@ const int dots_and_boxes::_get_edge_count(const int& position) const
 const int dots_and_boxes::_get_edge_count(const int& row, const int& col) const
 {
     return _get_edge_count(row*_shape.second + col);
+}
+
+const bool dots_and_boxes::_left_capture(const int position) const
+{
+    int n_rows = _shape.first, n_cols = _shape.second;
+
+    assert(position < n_rows * (n_cols + 1));
+
+    return has_been_played(position - 1) && 
+           has_been_played(position + n_rows*(n_cols + 1) - (position/(n_cols + 1) + 1)) && 
+           has_been_played(position + n_rows*(n_cols + 1) - (position/(n_cols + 1) + 1) + n_cols);
+}
+
+const bool dots_and_boxes::_right_capture(const int position) const
+{
+    int n_rows = _shape.first, n_cols = _shape.second;
+
+    assert(position < n_rows * (n_cols + 1));
+
+    return has_been_played(position + 1) && 
+           has_been_played(position + n_rows*(n_cols + 1) - (position/(n_cols + 1) + 1) + 1) && 
+           has_been_played(position + n_rows*(n_cols + 1) - (position/(n_cols + 1) + 1) + (n_cols + 1));
+}
+
+const bool dots_and_boxes::_up_capture(const int position) const
+{
+    int n_rows = _shape.first, n_cols = _shape.second;
+    int horizontal_location = position - n_rows*(n_cols + 1);
+
+    assert(position >= n_rows * (n_cols + 1));
+
+    return has_been_played(position - n_cols) && 
+           has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1)) && 
+           has_been_played(horizontal_location - (n_cols - horizontal_location/n_cols + 1) + 1);
+}
+
+const bool dots_and_boxes::_down_capture(const int position) const
+{
+    int n_rows = _shape.first, n_cols = _shape.second;
+    int horizontal_location = position - n_rows*(n_cols + 1);
+
+    assert(position >= n_rows * (n_cols + 1));
+
+    return has_been_played(position + n_cols) && 
+           has_been_played(horizontal_location + (horizontal_location/n_cols)) && 
+           has_been_played(horizontal_location + (horizontal_location/n_cols) + 1);
+}
+
+const bool dots_and_boxes::left_capture(const int position) const
+{
+    return _left_capture(position);
+}
+
+const bool dots_and_boxes::right_capture(const int position) const
+{
+    return _right_capture(position);
+}
+
+const bool dots_and_boxes::up_capture(const int position) const
+{
+    return _up_capture(position);
+}
+
+const bool dots_and_boxes::down_capture(const int position) const
+{
+    return _down_capture(position);
 }
 
 void dots_and_boxes::_assert_valid_state() const {
