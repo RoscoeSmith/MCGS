@@ -285,18 +285,18 @@ dots_and_boxes_move_generator::operator bool() const
 
 void dots_and_boxes_move_generator::_next_move(bool init)
 {
-    std::cout << "in _next_move call" << std::endl;
-    
+
     assert(init || *this);
 
-    std::cout << " in _next_move start " << _location << " " << _has_move << "\n" << _game.pretty_print() << std::endl;
+    std::cout << "in _next_move start " << _location << " " << _has_move << "\n" << _game.pretty_print() << std::endl;
 
     int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second;
 
     _has_move = false;
 
-    if(_location >= get_total_moves(n_rows, n_cols))
+    if(!init && ++_location > get_total_moves(n_rows, n_cols))
         return;
+
 
     while(_location < get_total_moves(n_rows, n_cols))
     {
@@ -311,12 +311,8 @@ void dots_and_boxes_move_generator::_next_move(bool init)
 
     }
 
-    std::cout << " in _next_move end " << _location << " " << _has_move << "\n\n" << std::endl;
+    std::cout << "in _next_move end " << _location << " " << _has_move << "\n\n" << std::endl;
 
-    usleep(1000000);
-
-    // if(_location > 7)
-    //     exit(0);
 
 }
 
@@ -480,7 +476,7 @@ void dots_and_boxes::play(const move& m, bw to_play)
 
 void dots_and_boxes::undo_move()
 {
-    std::cout << "in undo_move call" << std::endl;
+
     ::move m = last_move();
     game::undo_move();
 
