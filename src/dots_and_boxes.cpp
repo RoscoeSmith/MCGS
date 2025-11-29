@@ -407,19 +407,25 @@ void dots_and_boxes::_init_hash(local_hash& hash) const
     for(bool a : _vertical)
     {
         if(a)
-            hash.toggle_value(num_hashes++, static_cast<int>(a));
+            hash.toggle_value(num_hashes, static_cast<int>(a));
+        
+        num_hashes ++;
     }
 
     for(bool a : _horizontal)
     {
         if(a)
-            hash.toggle_value(num_hashes++, static_cast<int>(a));
+            hash.toggle_value(num_hashes, static_cast<int>(a));
+
+        num_hashes ++;
     }
 
     for(int a : _boxes)
     {
         if(a != EMPTY)
-            hash.toggle_value(num_hashes++, a);
+            hash.toggle_value(num_hashes, a);
+
+        num_hashes ++;
     }
     
 }
@@ -441,11 +447,29 @@ void dots_and_boxes::play(const move& m, bw to_play)
     {
         assert(!_vertical.at(pos));
         _vertical.at(pos) = true;
+
+        if(num_captures != 0)
+        {
+            if(pos % (_shape.second + 1) > 0 && _left_capture(pos)) // not on the left side of the board, can check box to the left
+                _boxes.at(pos - pos/(_shape.second + 1) - 1) = to_play;
+
+            if(pos % (_shape.second + 1) < _shape.second && _right_capture(pos)) // not on the right side of the board, can check the box to the right
+                _boxes.at(pos - pos/(_shape.second + 1)) = to_play;
+        }
     }
     else
     {
         assert(!_horizontal.at(pos - _vertical.size()));
         _horizontal.at(pos - _vertical.size()) = true;
+
+        if(num_captures != 0)
+        {
+            if((pos - _vertical.size()) >= _shape.second && _up_capture(pos)) // not on the top side of the board, can check the box above
+                _boxes.at(pos - _vertical.size() - _shape.second) = to_play;
+
+            if((pos - _vertical.size()) < _shape.first*_shape.second && _down_capture(pos)) // not on the bottom of the board, can check box below
+                _boxes.at(pos - _vertical.size()) = to_play;
+        }
     }
 
     if(to_play == BLACK)
@@ -458,6 +482,8 @@ void dots_and_boxes::play(const move& m, bw to_play)
     }
 
     std::cout << "in play end " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
+
+    std::cout << get_local_hash() << std::endl;
 
 }
 
@@ -479,11 +505,32 @@ void dots_and_boxes::undo_move()
     {
         assert(_vertical.at(pos));
         _vertical.at(pos) = false;
+
+        if(num_captures != 0)
+        {
+            if(pos % (_shape.second + 1) > 0) // not on the left side of the board
+                _boxes.at(pos - pos/(_shape.second + 1) - 1) = EMPTY;
+
+            if(pos % (_shape.second + 1) < _shape.second) // not on the right side of the board
+                _boxes.at(pos - pos/(_shape.second + 1)) = EMPTY;
+        }
+
     }
     else
     {
         assert(_horizontal.at(pos - _vertical.size()));
         _horizontal.at(pos - _vertical.size()) = false;
+
+
+        if(num_captures != 0)
+        {
+            if((pos - _vertical.size()) >= _shape.second) // not on the top side of the board
+                _boxes.at(pos - _vertical.size() - _shape.second) = EMPTY;
+
+            if((pos - _vertical.size()) < _shape.first*_shape.second) // not on the bottom of the board, can check box below
+                _boxes.at(pos - _vertical.size()) = EMPTY;
+        }
+
     }
 
     if(to_play == BLACK)
