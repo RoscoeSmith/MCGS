@@ -192,14 +192,14 @@ std::string board_to_string(const std::vector<bool>& horizontal,const std::vecto
 
 //---------------------------------------------------------------------------
 
-class dots_and_boxes_move_generator : public move_generator
+class dots_and_boxes_move_generator : public multimove_generator
 {
 public:
     dots_and_boxes_move_generator(const dots_and_boxes& game, bw to_play);
 
     void operator++() override;
     operator bool() const override;
-    ::move gen_move() const override;
+    std::vector<::move> gen_multimove() const override;
 
 
 private:
@@ -214,7 +214,7 @@ private:
 };
 
 dots_and_boxes_move_generator::dots_and_boxes_move_generator(const dots_and_boxes& game, bw to_play)
-    : move_generator(to_play),
+    : multimove_generator(to_play),
     _game(game),
     _location(0),
     _has_move(false)
@@ -236,8 +236,9 @@ dots_and_boxes_move_generator::operator bool() const
     return _has_move;
 }
 
-::move dots_and_boxes_move_generator::gen_move() const
+std::vector<::move> dots_and_boxes_move_generator::gen_multimove() const
 {
+    std::vector<::move> multimove;
 
     int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second, num_captures = 0;
 
@@ -262,9 +263,11 @@ dots_and_boxes_move_generator::operator bool() const
             num_captures ++;
     }
 
-    return (num_captures << 28) | _location;
+    multimove.push_back((num_captures << 28) | _location);
 
-}
+    return multimove;
+
+} // TODO: rewrite to generate multimoves
 
 void dots_and_boxes_move_generator::_next_move(bool init)
 {

@@ -291,9 +291,12 @@ public:
 
     int opponent() const { return ::opponent(_to_play); }
 
+    virtual bool is_multi() const { return false; }
+
     virtual void operator++() = 0;
     virtual operator bool() const = 0;
     virtual move gen_move() const = 0;
+    virtual std::vector<move> gen_multimove() const { assert(false); }
 
 private:
     const bw _to_play;
@@ -301,6 +304,28 @@ private:
 
 inline move_generator::move_generator(bw to_play) : _to_play(to_play)
 {
+}
+
+//---------------------------------------------------------------------------
+class multimove_generator : public move_generator
+{
+public:
+    multimove_generator(bw to_play);
+
+    move gen_move() const override;
+    virtual std::vector<move> gen_multimove() const = 0;
+
+    bool is_multi() const { return true; }
+}; // class multimove_generator
+
+inline multimove_generator::multimove_generator(bw to_play)
+    : move_generator(to_play)
+{
+}
+inline move multimove_generator::gen_move() const
+{
+    assert(false);
+    return 0;
 }
 
 //---------------------------------------------------------------------------

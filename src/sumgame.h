@@ -47,9 +47,13 @@ enum sumgame_undo_code
 struct sumgame_move
 {
     sumgame_move(int subg, move m) : subgame_idx(subg), m(m) {}
+    sumgame_move(int subg, std::vector<move> v) : subgame_idx(subg), m(0), v(v) {}
+
+    bool is_multimove() const { return !v.empty(); }
 
     int subgame_idx;
     move m;
+    std::vector<move> v;
 };
 
 //////////////////////////////////////// play_record

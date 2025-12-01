@@ -24,6 +24,7 @@
 #include <ctime>
 #include <iostream>
 #include <memory>
+#include <variant>
 
 #include <thread>
 #include <future>
@@ -45,6 +46,8 @@ using std::optional;
 using sumgame_impl::change_record;
 
 std::shared_ptr<ttable_sumgame> sumgame::_tt(nullptr);
+
+typedef std::variant<move, std::vector<move>> mmove;
 
 //---------------------------------------------------------------------------
 
@@ -177,10 +180,18 @@ sumgame_move sumgame_move_generator::gen_sum_move() const
 {
     assert(_subgame_generator);
     if (_use_skipped_games)
-        return sumgame_move(_skipped_games[_subgame_idx].first,
-                            _subgame_generator->gen_move());
+        if (_subgame_generator->is_multi())
+            return sumgame_move(_skipped_games[_subgame_idx].first,
+                                _subgame_generator->gen_multimove());
+        else
+            return sumgame_move(_skipped_games[_subgame_idx].first,
+                                _subgame_generator->gen_move());
     else
-        return sumgame_move(_subgame_idx, _subgame_generator->gen_move());
+        if (_subgame_generator->is_multi())
+            return sumgame_move(_subgame_idx,
+                                _subgame_generator->gen_multimove());
+        else
+            return sumgame_move(_subgame_idx, _subgame_generator->gen_move());
 }
 
 //---------------------------------------------------------------------------
@@ -592,11 +603,25 @@ void sumgame::play_sum(const sumgame_move& sm, bw to_play)
     play_record& record = _play_record_stack.back();
 
     const int subg = sm.subgame_idx;
-    const move mv = sm.m;
+    const mmove mv = sm.is_multimove()
+        ? mmove{sm.v}
+        : mmove{sm.m};
 
     game* g = subgame(subg);
 
-    g->play(mv, to_play);
+    if (sm.is_multimove())
+    {
+        for (const move& m : sm.v)
+        {
+            g->play(m, to_play);
+        }
+    }
+    else
+    {
+        g->play(sm.m, to_play);
+        
+    }
+    // std::visit([g, to_play](auto&& x){ g->play(x, to_play); }, mv);
     split_result sr;
 
     if (global::play_split())
@@ -626,6 +651,7 @@ void sumgame::play_sum(const sumgame_move& sm, bw to_play)
     }
 
     alternating_move_game::play(mv);
+    // std::visit([](auto&& x){ alternating_move_game::play(mv); }, mv);
 }
 
 void sumgame::undo_move()
