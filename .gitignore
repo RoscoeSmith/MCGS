@@ -42,6 +42,7 @@ build
 # Editor temp files  (clangd cache, bear output)
 .cache
 compile_commands.json
+.vscode
 
 # Other temp files (output of random_strip.py)
 temp.txt
