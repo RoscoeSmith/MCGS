@@ -449,7 +449,7 @@ void dots_and_boxes::play(const move& m, bw to_play)
             if(pos % (_shape.second + 1) > 0 && _left_capture(pos)) // not on the left side of the board, can check box to the left
                 _boxes.at(pos - pos/(_shape.second + 1) - 1) = to_play;
 
-            if(pos % (_shape.second + 1) < _shape.second && _right_capture(pos)) // not on the right side of the board, can check the box to the right
+            if(pos % (_shape.second + 1) < static_cast<unsigned int>(_shape.second) && _right_capture(pos)) // not on the right side of the board, can check the box to the right
                 _boxes.at(pos - pos/(_shape.second + 1)) = to_play;
         }
     }
@@ -460,10 +460,10 @@ void dots_and_boxes::play(const move& m, bw to_play)
 
         if(num_captures != 0)
         {
-            if((pos - _vertical.size()) >= _shape.second && _up_capture(pos)) // not on the top side of the board, can check the box above
+            if((pos - _vertical.size()) >= static_cast<unsigned int>(_shape.second) && _up_capture(pos)) // not on the top side of the board, can check the box above
                 _boxes.at(pos - _vertical.size() - _shape.second) = to_play;
 
-            if((pos - _vertical.size()) < _shape.first*_shape.second && _down_capture(pos)) // not on the bottom of the board, can check box below
+            if((pos - _vertical.size()) < static_cast<unsigned int>(_shape.first*_shape.second) && _down_capture(pos)) // not on the bottom of the board, can check box below
                 _boxes.at(pos - _vertical.size()) = to_play;
         }
     }
@@ -507,7 +507,7 @@ void dots_and_boxes::undo_move()
             if(pos % (_shape.second + 1) > 0) // not on the left side of the board
                 _boxes.at(pos - pos/(_shape.second + 1) - 1) = EMPTY;
 
-            if(pos % (_shape.second + 1) < _shape.second) // not on the right side of the board
+            if(pos % (_shape.second + 1) < static_cast<unsigned int>(_shape.second)) // not on the right side of the board
                 _boxes.at(pos - pos/(_shape.second + 1)) = EMPTY;
         }
 
@@ -520,10 +520,10 @@ void dots_and_boxes::undo_move()
 
         if(num_captures != 0)
         {
-            if((pos - _vertical.size()) >= _shape.second) // not on the top side of the board
+            if((pos - _vertical.size()) >= static_cast<unsigned int>(_shape.second)) // not on the top side of the board
                 _boxes.at(pos - _vertical.size() - _shape.second) = EMPTY;
 
-            if((pos - _vertical.size()) < _shape.first*_shape.second) // not on the bottom of the board, can check box below
+            if((pos - _vertical.size()) < static_cast<unsigned int>(_shape.first*_shape.second)) // not on the bottom of the board, can check box below
                 _boxes.at(pos - _vertical.size()) = EMPTY;
         }
 
