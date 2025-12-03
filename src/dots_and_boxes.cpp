@@ -721,6 +721,8 @@ std::vector<::move> dots_and_boxes::last_multimove() const {
             if (add_edge)
             {
                 moves.push_back((*riter));
+                add_edge = false;
+
                 if (player == EMPTY)
                 {
                     player = ((*riter) >> 31) & 1 ? WHITE : BLACK;
@@ -731,7 +733,8 @@ std::vector<::move> dots_and_boxes::last_multimove() const {
                     // assert(move_player == player);
                     if (move_player != player)
                     {
-                        continue;
+                        std::cout << "!! swapped player, quitting" << std::endl;
+                        break;
                     }
                 }
                 std::cout << "!! pushed edge move to multimove" << std::endl;

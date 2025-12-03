@@ -720,7 +720,7 @@ void sumgame::undo_move()
         {
             const move m = sm.v.at(i);
             const move subm = cgt_move::decode(mv.at(i));
-            std::cout << "in multimove assert\nm: " << std::bitset<32>(m) << "\nsubm: " << std::bitset<32>(subm) << "\nsm.v.at(i): " << std::bitset<32>(sm.v.at(i)) << std::endl;
+            std::cout << "in multimove assert\nm:\t" << std::bitset<32>(m) << "\nsubm:\t" << std::bitset<32>(subm) << "\nsm.v:\t" << std::bitset<32>(sm.v.at(i)) << std::endl;
 
             assert(                                                         //
                 m == subm ||                                             //
