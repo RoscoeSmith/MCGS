@@ -24,7 +24,7 @@
 #include <ctime>
 #include <iostream>
 #include <memory>
-#include <variant>
+// #include <variant>
 
 #include <thread>
 #include <future>
@@ -47,7 +47,7 @@ using sumgame_impl::change_record;
 
 std::shared_ptr<ttable_sumgame> sumgame::_tt(nullptr);
 
-typedef std::variant<move, std::vector<move>> mmove;
+// typedef std::variant<move, std::vector<move>> mmove;
 
 //---------------------------------------------------------------------------
 
@@ -603,9 +603,9 @@ void sumgame::play_sum(const sumgame_move& sm, bw to_play)
     play_record& record = _play_record_stack.back();
 
     const int subg = sm.subgame_idx;
-    const mmove mv = sm.is_multimove()
-        ? mmove{sm.v}
-        : mmove{sm.m};
+    // const mmove mv = sm.is_multimove()
+    //     ? mmove{sm.v}
+    //     : mmove{sm.m};
 
     game* g = subgame(subg);
 
@@ -618,10 +618,9 @@ void sumgame::play_sum(const sumgame_move& sm, bw to_play)
     }
     else
     {
-        g->play(sm.m, to_play);
-        
+        const move m = sm.m;
+        g->play(m, to_play);
     }
-    // std::visit([g, to_play](auto&& x){ g->play(x, to_play); }, mv);
     split_result sr;
 
     if (global::play_split())
@@ -650,7 +649,16 @@ void sumgame::play_sum(const sumgame_move& sm, bw to_play)
             g->normalize();
     }
 
-    alternating_move_game::play(mv);
+    if (sm.is_multimove())
+    {
+        const move m = sm.m;
+        alternating_move_game::play(m);
+    }
+    else
+    {
+        const std::vector<move> v = sm.v;
+        alternating_move_game::play(v);
+    }
     // std::visit([](auto&& x){ alternating_move_game::play(mv); }, mv);
 }
 
@@ -692,15 +700,34 @@ void sumgame::undo_move()
             s->undo_normalize();
     }
 
-    const move subm = cgt_move::decode(s->last_move());
+    if (sm.is_multimove())
+    {
+        const std::vector<move> mv = s->last_multimove();
+        for (const move& m : mv)
+        {
+            const move subm = cgt_move::decode(m);
 
-    assert(                                                         //
-        sm.m == subm ||                                             //
-        (                                                           //
-            (cgt_move::decode(sm.m) == subm) &&                     //
-            (s->game_type() == game_type<impartial_game_wrapper>()) //
-            )                                                       //
-    );                                                              //
+            assert(                                                         //
+                sm.m == subm ||                                             //
+                (                                                           //
+                    (cgt_move::decode(sm.m) == subm) &&                     //
+                    (s->game_type() == game_type<impartial_game_wrapper>()) //
+                    )                                                       //
+            );                                                              //
+        }
+    }
+    else
+    {
+        const move subm = cgt_move::decode(s->last_move());
+        
+        assert(                                                         //
+            sm.m == subm ||                                             //
+            (                                                           //
+                (cgt_move::decode(sm.m) == subm) &&                     //
+                (s->game_type() == game_type<impartial_game_wrapper>()) //
+                )                                                       //
+        );                                                              //
+    }
 
     s->undo_move();
     alternating_move_game::undo_move();

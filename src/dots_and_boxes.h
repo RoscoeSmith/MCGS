@@ -20,6 +20,7 @@ public:
 
     void play(const move& m, bw to_play) override;
     void undo_move() override;
+    std::vector<move> last_multimove() const override;
 
     move_generator* create_move_generator(bw to_play) const override;
 

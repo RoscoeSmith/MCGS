@@ -36,9 +36,12 @@ public:
     bool is_active() const;
     void set_active(bool status);
     move last_move() const;
+    virtual std::vector<move> last_multimove() const;
     bool has_moves() const;
     int num_moves_played() const;
     int undo_stack_size() const;
+
+    const std::vector<move> get_move_stack() const;
 
     virtual void play(const move& m, bw to_play);
     virtual void undo_move();
@@ -176,6 +179,11 @@ inline move game::last_move() const
     return _move_stack.back();
 }
 
+inline std::vector<move> game::last_multimove() const
+{
+    assert(false);
+}
+
 inline split_result game::split() const
 {
     split_result sr = _split_impl();
@@ -260,6 +268,11 @@ inline int game::undo_stack_size() const
 #else
     return 0;
 #endif
+}
+
+inline const std::vector<move> game::get_move_stack() const
+{
+    return _move_stack;
 }
 
 inline bool game::_hash_updatable() const

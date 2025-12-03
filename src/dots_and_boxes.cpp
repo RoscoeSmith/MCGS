@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cassert>
 #include <cctype>
+#include <algorithm>
 
 
 /*
@@ -488,6 +489,7 @@ void dots_and_boxes::play(const move& m, bw to_play)
 
 void dots_and_boxes::undo_move()
 {
+    // TODO: rewrite to undo multimoves properly
 
     ::move m = last_move();
     game::undo_move();
@@ -700,4 +702,26 @@ void dots_and_boxes::_assert_valid_state() const {
                 assert(_get_edge_count(r, c) < 4);
         }
     }
+}
+
+std::vector<::move> dots_and_boxes::last_multimove() const {
+    std::vector<::move> moves;
+    const std::vector<::move> move_stack = get_move_stack();
+    bool add_edge = (move_stack.back() & (3 << 28)) >> 28 == 0;
+    for (auto riter = move_stack.rbegin(); riter != move_stack.rend(); ++riter)
+    {
+        if ((*riter & (3 << 28)) >> 28 == 0)
+        {
+            if (add_edge)
+                moves.push_back((*riter));
+            else
+                break;
+        }
+        else
+        {
+            moves.push_back((*riter));
+        }
+    }
+    std::reverse(moves.begin(), moves.end());
+    return moves;
 }

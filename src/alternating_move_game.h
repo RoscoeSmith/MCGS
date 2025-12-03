@@ -12,7 +12,7 @@
 #include "cgt_basics.h"
 #include "cgt_move.h"
 #include <cassert>
-#include <variant>
+// #include <variant>
 
 class alternating_move_game
 {
@@ -46,7 +46,7 @@ public:
     virtual bool find_static_winner(bool& success) const;
     virtual void play(const move& m);
     virtual void play(const std::vector<move>& m);
-    virtual void play(const std::variant<move, std::vector<move>>& mv);
+    // virtual void play(const std::variant<move, std::vector<move>>& mv);
     virtual void undo_move();
 
 private:
@@ -108,12 +108,11 @@ inline void alternating_move_game::play(const std::vector<move>& mv)
         }
     _to_play = ::opponent(_to_play);
 }
-inline void alternating_move_game::play(const std::variant<move,
-                                        std::vector<move>>& m)
-{
-    std::visit([this](auto&& x){ alternating_move_game::play(x); }, m);
-}
-
+// inline void alternating_move_game::play(const std::variant<move,
+//                                         std::vector<move>>& m)
+// {
+//     std::visit([this](auto&& x){ alternating_move_game::play(x); }, m);
+// }
 inline void alternating_move_game::undo_move()
 {
     if (_game)
