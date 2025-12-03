@@ -491,60 +491,65 @@ void dots_and_boxes::undo_move()
 {
     // TODO: rewrite to undo multimoves properly
 
-    ::move m = last_move();
-    game::undo_move();
-
-    bw to_play = cgt_move::get_color(m);
-
-    unsigned int pos = m & (MOVE_LIMIT - 1);
-    int num_captures = (m >> 28) & 3;
-
-    std::cout << "in undo start " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
-
-
-    if(pos < _vertical.size())
+    std::vector<::move> mv = last_multimove();
+    for (std::size_t i = 0; i < mv.size(); i++)
     {
-        assert(_vertical.at(pos));
-        _vertical.at(pos) = false;
+        // ::move m = last_move();
+        ::move m = mv.at(i);
 
-        if(num_captures != 0)
+        game::undo_move();
+
+        bw to_play = cgt_move::get_color(m);
+
+        unsigned int pos = m & (MOVE_LIMIT - 1);
+        int num_captures = (m >> 28) & 3;
+
+        std::cout << "in undo start " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
+
+
+        if(pos < _vertical.size())
         {
-            if(pos % (_shape.second + 1) > 0) // not on the left side of the board
-                _boxes.at(pos - pos/(_shape.second + 1) - 1) = EMPTY;
+            assert(_vertical.at(pos));
+            _vertical.at(pos) = false;
 
-            if(pos % (_shape.second + 1) < static_cast<unsigned int>(_shape.second)) // not on the right side of the board
-                _boxes.at(pos - pos/(_shape.second + 1)) = EMPTY;
+            if(num_captures != 0)
+            {
+                if(pos % (_shape.second + 1) > 0) // not on the left side of the board
+                    _boxes.at(pos - pos/(_shape.second + 1) - 1) = EMPTY;
+
+                if(pos % (_shape.second + 1) < static_cast<unsigned int>(_shape.second)) // not on the right side of the board
+                    _boxes.at(pos - pos/(_shape.second + 1)) = EMPTY;
+            }
+
+        }
+        else
+        {
+            assert(_horizontal.at(pos - _vertical.size()));
+            _horizontal.at(pos - _vertical.size()) = false;
+
+
+            if(num_captures != 0)
+            {
+                if((pos - _vertical.size()) >= static_cast<unsigned int>(_shape.second)) // not on the top side of the board
+                    _boxes.at(pos - _vertical.size() - _shape.second) = EMPTY;
+
+                if((pos - _vertical.size()) < static_cast<unsigned int>(_shape.first*_shape.second)) // not on the bottom of the board, can check box below
+                    _boxes.at(pos - _vertical.size()) = EMPTY;
+            }
+
         }
 
-    }
-    else
-    {
-        assert(_horizontal.at(pos - _vertical.size()));
-        _horizontal.at(pos - _vertical.size()) = false;
-
-
-        if(num_captures != 0)
+        if(to_play == BLACK)
         {
-            if((pos - _vertical.size()) >= static_cast<unsigned int>(_shape.second)) // not on the top side of the board
-                _boxes.at(pos - _vertical.size() - _shape.second) = EMPTY;
-
-            if((pos - _vertical.size()) < static_cast<unsigned int>(_shape.first*_shape.second)) // not on the bottom of the board, can check box below
-                _boxes.at(pos - _vertical.size()) = EMPTY;
+            _left_score -= num_captures;
         }
-
+        else
+        {
+            _right_score -= num_captures;
+        }
+        
+        std::cout << "in undo end " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
     }
-
-    if(to_play == BLACK)
-    {
-        _left_score -= num_captures;
-    }
-    else
-    {
-        _right_score -= num_captures;
-    }
-
-    std::cout << "in undo end " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
-
 }
 
 std::string dots_and_boxes::board_as_string() const
@@ -707,18 +712,51 @@ void dots_and_boxes::_assert_valid_state() const {
 std::vector<::move> dots_and_boxes::last_multimove() const {
     std::vector<::move> moves;
     const std::vector<::move> move_stack = get_move_stack();
-    bool add_edge = (move_stack.back() & (3 << 28)) >> 28 == 0;
+    bool add_edge = static_cast<unsigned int>(move_stack.back() & (3 << 28)) >> 28 == 0;
+    int player = EMPTY;
     for (auto riter = move_stack.rbegin(); riter != move_stack.rend(); ++riter)
     {
-        if ((*riter & (3 << 28)) >> 28 == 0)
+        if (static_cast<unsigned int>(*riter & (3 << 28)) >> 28 == 0)
         {
             if (add_edge)
+            {
                 moves.push_back((*riter));
+                if (player == EMPTY)
+                {
+                    player = ((*riter) >> 31) & 1 ? WHITE : BLACK;
+                }
+                else
+                {
+                    int move_player = ((*riter) >> 31) & 1 ? WHITE : BLACK;
+                    // assert(move_player == player);
+                    if (move_player != player)
+                    {
+                        continue;
+                    }
+                }
+                std::cout << "!! pushed edge move to multimove" << std::endl;
+            }
             else
+            {
                 break;
+            }
         }
         else
         {
+            if (player == EMPTY)
+            {
+                player = ((*riter) >> 31) & 1 ? WHITE : BLACK;
+            }
+            else
+            {
+                int move_player = ((*riter) >> 31) & 1 ? WHITE : BLACK;
+                // assert(move_player == player);
+                if (move_player != player)
+                {
+                    continue;
+                }
+            }
+            std::cout << "!! pushed capture move to multimove" << std::endl;
             moves.push_back((*riter));
         }
     }

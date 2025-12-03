@@ -25,6 +25,7 @@
 #include <iostream>
 #include <memory>
 // #include <variant>
+#include <bitset>
 
 #include <thread>
 #include <future>
@@ -703,14 +704,28 @@ void sumgame::undo_move()
     if (sm.is_multimove())
     {
         const std::vector<move> mv = s->last_multimove();
-        for (const move& m : mv)
+        std::cout << "mv (last_multimove): ";
+        for (const auto& x : mv)
         {
-            const move subm = cgt_move::decode(m);
+            std::cout << x << " ";
+        }
+        std::cout << std::endl;
+        std::cout << "sm.v: ";
+        for (const auto& x : sm.v)
+        {
+            std::cout << x << " ";
+        }
+        std::cout << std::endl;
+        for (std::size_t i = 0; i < mv.size(); i++)
+        {
+            const move m = sm.v.at(i);
+            const move subm = cgt_move::decode(mv.at(i));
+            std::cout << "in multimove assert\nm: " << std::bitset<32>(m) << "\nsubm: " << std::bitset<32>(subm) << "\nsm.v.at(i): " << std::bitset<32>(sm.v.at(i)) << std::endl;
 
             assert(                                                         //
-                sm.m == subm ||                                             //
+                m == subm ||                                             //
                 (                                                           //
-                    (cgt_move::decode(sm.m) == subm) &&                     //
+                    (cgt_move::decode(m) == subm) &&                     //
                     (s->game_type() == game_type<impartial_game_wrapper>()) //
                     )                                                       //
             );                                                              //
