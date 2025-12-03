@@ -756,7 +756,7 @@ std::vector<::move> dots_and_boxes::last_multimove() const {
                 // assert(move_player == player);
                 if (move_player != player)
                 {
-                    continue;
+                    break;
                 }
             }
             std::cout << "!! pushed capture move to multimove" << std::endl;
