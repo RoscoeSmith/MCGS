@@ -51,6 +51,8 @@ using sumgame_impl::change_record;
 std::shared_ptr<ttable_sumgame> sumgame::_tt(nullptr);
 
 // typedef std::variant<move, std::vector<move>> mmove;
+const bool TIE_WL = false;
+// const bool TIE_WL = true;
 
 //---------------------------------------------------------------------------
 
@@ -460,27 +462,44 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
     }
 
     bool res;
+    int score_value = dynamic_cast<scoring_game*>(_subgames.at(0))->count_score();
+    if (toplay == WHITE)
+    {
+        score_value = -score_value;
+    }
+    if (score_value == 0)  // score is 0, tie
+    {
+        res = TIE_WL;
+    }
+    else if (score_value > 0)  // negascore is positive, win for ptm
+    {
+        res = true;
+    }
+    else  // negascore is negative, loss for ptm
+    {
+        res = false;
+    }
 
-    if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() > 0 && toplay == BLACK)
-    {
-        res = true;
-    }
-    else if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() > 0 && toplay == WHITE)
-    {
-        res = false;
-    }
-    else if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() < 0 && toplay == BLACK)
-    {
-        res = false;
-    }
-    else if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() < 0 && toplay == WHITE)
-    {
-        res = true;
-    }
-    else
-    {
-        res = true;
-    }
+    // if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() > 0 && toplay == BLACK)
+    // {
+    //     res = true;
+    // }
+    // else if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() > 0 && toplay == WHITE)
+    // {
+    //     res = false;
+    // }
+    // else if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() < 0 && toplay == BLACK)
+    // {
+    //     res = false;
+    // }
+    // else if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() < 0 && toplay == WHITE)
+    // {
+    //     res = true;
+    // }
+    // else  // score sum is 0, tie
+    // {
+    //     res = false;
+    // }
 
     
 
