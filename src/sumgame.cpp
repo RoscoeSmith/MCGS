@@ -9,6 +9,8 @@
 #include "type_table.h"
 #include "game.h"
 
+#include "dots_and_boxes.h"
+
 #include "cgt_dyadic_rational.h"
 #include "cgt_integer_game.h"
 #include "cgt_nimber.h"
@@ -410,7 +412,10 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
         _do_ttable_lookup();
 
     if (tt_result.has_value() && tt_result->entry_valid())
+    {
+        std::cout << "TT hit!" << std::endl;
         return tt_result->get_bool(0);
+    }
 
     const bw toplay = to_play();
 
@@ -418,6 +423,9 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
         create_sum_move_generator(toplay));
 
     sumgame_move_generator& mg = *mgp;
+
+    std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n---------------------\n" << std::endl;
+
 
     for (; mg; ++mg)
     {
@@ -615,7 +623,7 @@ void sumgame::play_sum(const sumgame_move& sm, bw to_play)
         for (const move& m : sm.v)
         {
             g->play(m, to_play);
-        }
+        }        
     }
     else
     {
