@@ -704,23 +704,25 @@ void sumgame::undo_move()
     if (sm.is_multimove())
     {
         const std::vector<move> mv = s->last_multimove();
-        std::cout << "mv (last_multimove): ";
-        for (const auto& x : mv)
-        {
-            std::cout << x << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "sm.v: ";
-        for (const auto& x : sm.v)
-        {
-            std::cout << x << " ";
-        }
-        std::cout << std::endl;
+        
+        // std::cout << "mv (last_multimove): ";
+        // for (const auto& x : mv)
+        // {
+        //     std::cout << x << " ";
+        // }
+        // std::cout << std::endl;
+        // std::cout << "sm.v: ";
+        // for (const auto& x : sm.v)
+        // {
+        //     std::cout << x << " ";
+        // }
+        // std::cout << std::endl;
+
         for (std::size_t i = 0; i < mv.size(); i++)
         {
             const move m = sm.v.at(i);
             const move subm = cgt_move::decode(mv.at(i));
-            std::cout << "in multimove assert\nm:\t" << std::bitset<32>(m) << "\nsubm:\t" << std::bitset<32>(subm) << "\nsm.v:\t" << std::bitset<32>(sm.v.at(i)) << std::endl;
+            //std::cout << "in multimove assert\nm:\t" << std::bitset<32>(m) << "\nsubm:\t" << std::bitset<32>(subm) << "\nsm.v:\t" << std::bitset<32>(sm.v.at(i)) << std::endl;
 
             assert(                                                         //
                 m == subm ||                                             //

@@ -283,16 +283,16 @@ void dots_and_boxes_move_generator::_next_move(bool init)
 
     assert(init || *this);
 
-    std::cout << "in _next_move start " << _has_move << " " << init << "\n" << _game.pretty_print() << _local_game.pretty_print() << std::endl;
+    // std::cout << "in _next_move start " << _has_move << " " << init << "\n" << _game.pretty_print() << _local_game.pretty_print() << std::endl;
 
-    std::cout << "moves" << std::endl;
+    // std::cout << "moves" << std::endl;
 
-    for(const auto& a : _curr_move)
-    {
-        std::cout << "pos: " << (a & (MOVE_LIMIT - 1)) << " captures: " << ((a >> 28) & 3) << "\n" << std::endl;
-    }
+    // for(const auto& a : _curr_move)
+    // {
+    //     std::cout << "pos: " << (a & (MOVE_LIMIT - 1)) << " captures: " << ((a >> 28) & 3) << "\n" << std::endl;
+    // }
 
-    usleep(100000);
+    // usleep(100000);
 
     int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second, pos;
 
@@ -389,15 +389,15 @@ void dots_and_boxes_move_generator::_next_move(bool init)
 
     
 
-    std::cout << "moves" << std::endl;
+    // std::cout << "moves" << std::endl;
 
-    for(const auto& a : _curr_move)
-    {
-        std::cout << "pos: " << (a & (MOVE_LIMIT - 1)) << " captures: " << ((a >> 28) & 3) << "\n" << std::endl;
-    }
+    // for(const auto& a : _curr_move)
+    // {
+    //     std::cout << "pos: " << (a & (MOVE_LIMIT - 1)) << " captures: " << ((a >> 28) & 3) << "\n" << std::endl;
+    // }
     
 
-    std::cout << "in _next_move end " << _has_move << "\n\n" << std::endl;
+    // std::cout << "in _next_move end " << _has_move << "\n\n" << std::endl;
 
 }
 
@@ -499,21 +499,21 @@ const int_pair dots_and_boxes::get_shape() const
 void dots_and_boxes::undo_move()
 {
 
-    std::cout << "in undo start " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
+    // std::cout << "in undo start " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
 
     std::vector<::move> moves = last_multimove();
 
-    for(const auto& a : moves)
-    {
-        std::cout << (a & (MOVE_LIMIT - 1)) << " " << ((a >> 28) & 3) << std::endl;
-    }
+    // for(const auto& a : moves)
+    // {
+    //     std::cout << (a & (MOVE_LIMIT - 1)) << " " << ((a >> 28) & 3) << std::endl;
+    // }
 
     for(::move m : moves)
     {
         undo_move_single();
     }
 
-    std::cout << "in undo end " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
+    // std::cout << "in undo end " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
 
 }
 
@@ -836,11 +836,11 @@ std::vector<::move> dots_and_boxes::last_multimove() const {
                     // assert(move_player == player);
                     if (move_player != player)
                     {
-                        std::cout << "!! swapped player, quitting" << std::endl;
+                        // std::cout << "!! swapped player, quitting" << std::endl;
                         break;
                     }
                 }
-                std::cout << "!! pushed edge move to multimove" << std::endl;
+                // std::cout << "!! pushed edge move to multimove" << std::endl;
             }
             else
             {
@@ -862,7 +862,7 @@ std::vector<::move> dots_and_boxes::last_multimove() const {
                     break;
                 }
             }
-            std::cout << "!! pushed capture move to multimove" << std::endl;
+            // std::cout << "!! pushed capture move to multimove" << std::endl;
             moves.push_back((*riter));
         }
     }
