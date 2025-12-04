@@ -244,7 +244,7 @@ dots_and_boxes_move_generator::operator bool() const
 ::move dots_and_boxes_move_generator::_gen_move(int position, dots_and_boxes& ref_game)
 {
 
-    int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second, num_captures = 0;
+    int n_rows = ref_game.get_shape().first, n_cols = ref_game.get_shape().second, num_captures = 0;
 
     assert(*this);
     assert(position < get_total_moves(n_rows, n_cols));
@@ -252,18 +252,18 @@ dots_and_boxes_move_generator::operator bool() const
     // first check if the move is a capture move
     if(position < n_rows*(n_cols + 1)) // vertical move
     {
-        if(position % (n_cols + 1) > 0 && _game.left_capture(position)) // not on the left side of the board, can check box to the left
+        if(position % (n_cols + 1) > 0 && ref_game.left_capture(position)) // not on the left side of the board, can check box to the left
             num_captures ++;
         
-        if(position % (n_cols + 1) < n_cols && _game.right_capture(position)) // not on the right side of the board, can check the box to the right
+        if(position % (n_cols + 1) < n_cols && ref_game.right_capture(position)) // not on the right side of the board, can check the box to the right
             num_captures ++;
     }
     else // horizontal move, no more checks necessary since assert passed
     {
-        if((position - n_rows*(n_cols + 1)) >= n_cols && _game.up_capture(position)) // not on the top side of the board, can check the box above
+        if((position - n_rows*(n_cols + 1)) >= n_cols && ref_game.up_capture(position)) // not on the top side of the board, can check the box above
             num_captures++;
         
-        if((position - n_rows*(n_cols + 1)) < n_rows*n_cols && _game.down_capture(position)) // not on the bottom of the board, can check box below
+        if((position - n_rows*(n_cols + 1)) < n_rows*n_cols && ref_game.down_capture(position)) // not on the bottom of the board, can check box below
             num_captures ++;
     }
 
@@ -283,7 +283,9 @@ void dots_and_boxes_move_generator::_next_move(bool init)
 
     assert(init || *this);
 
-    std::cout << "in _next_move start " << _has_move << "\n" << _game.pretty_print() << std::endl;
+    std::cout << "in _next_move start " << _has_move << " " << init << "\n" << _game.pretty_print() << _local_game.pretty_print() << std::endl;
+
+    usleep(100000);
 
     int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second;
 
@@ -293,6 +295,8 @@ void dots_and_boxes_move_generator::_next_move(bool init)
 
     if(init)
     {
+
+        std::cout << "here\n" << std::endl;
 
         while(pos < get_total_moves(n_rows, n_cols))
         {
@@ -325,9 +329,19 @@ void dots_and_boxes_move_generator::_next_move(bool init)
             pos ++;
         }
 
+        std::cout << "moves" << std::endl;
+
+        for(const auto& a : _curr_move)
+        {
+            std::cout << "pos: " << (a & (MOVE_LIMIT - 1)) << " captures: " << ((a >> 28) & 3) << "\n" << _local_game.pretty_print() << std::endl;
+        }
+
         return;
 
     }
+
+    std::cout << "here1\n" << std::endl;
+
 
     while(!_curr_move.empty())
     {
@@ -473,6 +487,14 @@ const int_pair dots_and_boxes::get_shape() const
 void dots_and_boxes::play(const std::vector<::move> multimove)
 {
 
+    std::cout << "in play start " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
+
+    for(const auto& a : multimove)
+    {
+        std::cout << (a & (MOVE_LIMIT - 1)) << " " << ((a >> 28) & 3) << std::endl;
+    }
+
+
     bw to_play;
 
     for(::move m : multimove)
@@ -482,19 +504,33 @@ void dots_and_boxes::play(const std::vector<::move> multimove)
         play_single(m, to_play);
     }
 
+
+    std::cout << "in play end " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
+
+    std::cout << get_local_hash() << std::endl;
+
 }
 
 
 
 void dots_and_boxes::undo_move()
 {
+
+    std::cout << "in undo start " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
+
     std::vector<::move> moves = last_multimove();
+
+    for(const auto& a : moves)
+    {
+        std::cout << (a & (MOVE_LIMIT - 1)) << " " << ((a >> 28) & 3) << std::endl;
+    }
 
     for(::move m : moves)
     {
         undo_move_single();
     }
 
+    std::cout << "in undo end " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
 
 }
 
@@ -540,9 +576,6 @@ void dots_and_boxes::play_single(const move& m, bw to_play)
     unsigned int pos = m & (MOVE_LIMIT - 1);
     int num_captures = (m >> 28) & 3;
 
-    std::cout << "in play start " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
-
-
     if(pos < _vertical.size())
     {
         assert(!_vertical.at(pos));
@@ -581,10 +614,6 @@ void dots_and_boxes::play_single(const move& m, bw to_play)
         _right_score += num_captures;
     }
 
-    std::cout << "in play end " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
-
-    std::cout << get_local_hash() << std::endl;
-
 }
 
 void dots_and_boxes::undo_move_single()
@@ -597,8 +626,6 @@ void dots_and_boxes::undo_move_single()
 
     unsigned int pos = m & (MOVE_LIMIT - 1);
     int num_captures = (m >> 28) & 3;
-
-    std::cout << "in undo start " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
 
 
     if(pos < _vertical.size())
@@ -641,8 +668,6 @@ void dots_and_boxes::undo_move_single()
         _right_score -= num_captures;
     }
     
-    std::cout << "in undo end " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
-
 }
 
 std::string dots_and_boxes::board_as_string() const
@@ -706,6 +731,8 @@ std::string dots_and_boxes::pretty_print() const
             result += "   ";
     }
     result += '*';
+
+    result += '\n';
 
     return result;
 }
