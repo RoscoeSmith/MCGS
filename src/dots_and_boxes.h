@@ -18,8 +18,12 @@ public:
     dots_and_boxes(int n_rows, int n_cols); // for new game
     dots_and_boxes(const std::string& game_as_string); // for game as string
 
-    void play(const move& m, bw to_play) override;
+    void play(const std::vector<::move> multimove);
     void undo_move() override;
+    
+    void play_single(const move& m, bw to_play);
+    void undo_move_single();
+
     std::vector<move> last_multimove() const override;
 
     move_generator* create_move_generator(bw to_play) const override;
@@ -58,8 +62,7 @@ private:
     const bool _up_capture(const int position) const;
     const bool _down_capture(const int position) const;
 
-    void _play(const move& m, bw to_play);
-    void _undo_move();
+    
 
 
 

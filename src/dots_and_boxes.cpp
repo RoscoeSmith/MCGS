@@ -301,7 +301,7 @@ void dots_and_boxes_move_generator::_next_move(bool init)
                 _has_move = true;
                 ::move temp = _gen_move(pos, _local_game);
                 _curr_move.push_back(temp);
-                _local_game._play(temp, BLACK);
+                _local_game.play_single(temp, BLACK);
                 break;
             }
 
@@ -317,7 +317,7 @@ void dots_and_boxes_move_generator::_next_move(bool init)
             {
                 ::move temp = _gen_move(pos, _local_game);
                 _curr_move.push_back(temp);
-                _local_game._play(temp, BLACK);
+                _local_game.play_single(temp, BLACK);
                 pos = 0;
                 continue;
             }
@@ -334,7 +334,7 @@ void dots_and_boxes_move_generator::_next_move(bool init)
 
         ::move temp = _curr_move.back();
         _curr_move.pop_back();
-        _local_game._undo_move();
+        _local_game.undo_move_single();
 
         pos = (temp & (MOVE_LIMIT - 1)) + 1;
 
@@ -345,7 +345,7 @@ void dots_and_boxes_move_generator::_next_move(bool init)
                 _has_move = true;
                 ::move temp = _gen_move(pos, _local_game);
                 _curr_move.push_back(temp);
-                _local_game._play(temp, BLACK);
+                _local_game.play_single(temp, BLACK);
                 pos = 0;
             }
 
@@ -362,7 +362,7 @@ void dots_and_boxes_move_generator::_next_move(bool init)
             {
                 ::move temp = _gen_move(pos, _local_game);
                 _curr_move.push_back(temp);
-                _local_game._play(temp, BLACK);
+                _local_game.play_single(temp, BLACK);
                 pos = 0;
             }
 
@@ -470,9 +470,18 @@ const int_pair dots_and_boxes::get_shape() const
     return _shape;
 }
 
-void dots_and_boxes::play(const move& m, bw to_play)
+void dots_and_boxes::play(const std::vector<::move> multimove)
 {
-    _play(m, to_play);
+
+    bw to_play;
+
+    for(::move m : multimove)
+    {
+        to_play = cgt_move::get_color(m);
+
+        play_single(m, to_play);
+    }
+
 }
 
 
@@ -483,7 +492,7 @@ void dots_and_boxes::undo_move()
 
     for(::move m : moves)
     {
-        _undo_move();
+        undo_move_single();
     }
 
 
@@ -523,7 +532,7 @@ void dots_and_boxes::_init_hash(local_hash& hash) const
     
 }
 
-void dots_and_boxes::_play(const move& m, bw to_play)
+void dots_and_boxes::play_single(const move& m, bw to_play)
 {
 
     game::play(m, to_play);
@@ -578,7 +587,7 @@ void dots_and_boxes::_play(const move& m, bw to_play)
 
 }
 
-void dots_and_boxes::_undo_move()
+void dots_and_boxes::undo_move_single()
 {
 
     ::move m = last_move();
@@ -611,7 +620,6 @@ void dots_and_boxes::_undo_move()
     {
         assert(_horizontal.at(pos - _vertical.size()));
         _horizontal.at(pos - _vertical.size()) = false;
-
 
         if(num_captures != 0)
         {
