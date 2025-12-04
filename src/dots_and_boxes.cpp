@@ -161,16 +161,6 @@ std::string board_to_string(const std::vector<bool>& horizontal,const std::vecto
 {
     std::string result;
     int n_rows = shape.first, n_cols = shape.second;
-    // add horizontal lines
-    for (int h = 0; h < n_cols * (n_rows + 1); h++)
-    {
-        if (h != 0 && h % n_cols == 0)
-        {
-            result += color_to_char(LINE_SEP);
-        }
-        result += color_to_char(horizontal[h] ? BLACK : EMPTY);
-    }
-    result += color_to_char(DIM_SEP);
     // add vertical lines
     for (int v = 0; v < n_rows * (n_cols + 1); v++)
     {
@@ -179,6 +169,16 @@ std::string board_to_string(const std::vector<bool>& horizontal,const std::vecto
             result += color_to_char(LINE_SEP);
         }
         result += color_to_char(vertical[v] ? BLACK : EMPTY);
+    }
+    result += color_to_char(DIM_SEP);
+    // add horizontal lines
+    for (int h = 0; h < n_cols * (n_rows + 1); h++)
+    {
+        if (h != 0 && h % n_cols == 0)
+        {
+            result += color_to_char(LINE_SEP);
+        }
+        result += color_to_char(horizontal[h] ? BLACK : EMPTY);
     }
     result += color_to_char(DIM_SEP);
     // add box colorings
