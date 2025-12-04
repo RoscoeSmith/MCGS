@@ -285,6 +285,13 @@ void dots_and_boxes_move_generator::_next_move(bool init)
 
     std::cout << "in _next_move start " << _has_move << " " << init << "\n" << _game.pretty_print() << _local_game.pretty_print() << std::endl;
 
+    std::cout << "moves" << std::endl;
+
+    for(const auto& a : _curr_move)
+    {
+        std::cout << "pos: " << (a & (MOVE_LIMIT - 1)) << " captures: " << ((a >> 28) & 3) << "\n" << std::endl;
+    }
+
     usleep(100000);
 
     int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second, pos;
@@ -330,7 +337,7 @@ void dots_and_boxes_move_generator::_next_move(bool init)
     }
     else
     {
-        while(!_curr_move.empty() && (_curr_move.back() & 0x30000000))
+        while(!_curr_move.empty() && !_has_move)
         {
 
             ::move temp = _curr_move.back();
@@ -344,50 +351,53 @@ void dots_and_boxes_move_generator::_next_move(bool init)
 
                 if(!_local_game.has_been_played(pos))
                 {
+
                     _has_move = true;
                     ::move temp = _gen_move(pos, _local_game);
                     _curr_move.push_back(temp);
                     _local_game.play(temp, BLACK);
 
-
-                    pos = 0;
                     break;
                 }
 
                 pos ++;
             }
 
-            if(pos == get_total_moves(n_cols, n_rows))
-                continue;
+        }
 
-            while(!_curr_move.empty() && (_curr_move.back() & 0x30000000)) // the last part of the multimove is a capture we have to keep looking
+        pos = 0;
+
+        while(pos < get_total_moves(n_rows, n_cols) && !_curr_move.empty() && (_curr_move.back() & 0x30000000)) // the last part of the multimove is a capture we have to keep looking
+        {
+
+            if(!_local_game.has_been_played(pos))
             {
 
-                if(!_local_game.has_been_played(pos))
-                {
-                    ::move temp = _gen_move(pos, _local_game);
-                    _curr_move.push_back(temp);
-                    _local_game.play(temp, BLACK);
-                    pos = 0;
-                }
+                ::move temp = _gen_move(pos, _local_game);
+                _curr_move.push_back(temp);
+                _local_game.play(temp, BLACK);
 
-                pos ++;
+                pos = 0;
+                continue;
             }
 
+            pos ++;
         }
+
+
     }
 
     
 
-    // std::cout << "moves" << std::endl;
+    std::cout << "moves" << std::endl;
 
-    // for(const auto& a : _curr_move)
-    // {
-    //     std::cout << "pos: " << (a & (MOVE_LIMIT - 1)) << " captures: " << ((a >> 28) & 3) << "\n" << _local_game.pretty_print() << std::endl;
-    // }
+    for(const auto& a : _curr_move)
+    {
+        std::cout << "pos: " << (a & (MOVE_LIMIT - 1)) << " captures: " << ((a >> 28) & 3) << "\n" << std::endl;
+    }
     
 
-    // std::cout << "in _next_move end " << _has_move << "\n\n" << std::endl;
+    std::cout << "in _next_move end " << _has_move << "\n\n" << std::endl;
 
 }
 
