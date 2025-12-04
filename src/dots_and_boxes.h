@@ -61,8 +61,6 @@ private:
     const bool _up_capture(const int position) const;
     const bool _down_capture(const int position) const;
 
-    
-
 
 
     void _assert_valid_state() const;

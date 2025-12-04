@@ -459,13 +459,38 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
         }
     }
 
+    bool res;
+
+    if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() > 0 && toplay == BLACK)
+    {
+        res = true;
+    }
+    else if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() > 0 && toplay == WHITE)
+    {
+        res = false;
+    }
+    else if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() < 0 && toplay == BLACK)
+    {
+        res = false;
+    }
+    else if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() < 0 && toplay == WHITE)
+    {
+        res = true;
+    }
+    else
+    {
+        res = true;
+    }
+
+    
+
     if (tt_result.has_value())
     {
         tt_result->init_entry();
-        tt_result->set_bool(0, false);
+        tt_result->set_bool(0, res);
     }
 
-    return solve_result(false);
+    return solve_result(res);
 }
 
 void sumgame::_push_undo_code(sumgame_undo_code code)
