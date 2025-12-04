@@ -58,6 +58,10 @@ private:
     const bool _up_capture(const int position) const;
     const bool _down_capture(const int position) const;
 
+    void _play(const move& m, bw to_play);
+    void _undo_move();
+
+
 
     void _assert_valid_state() const;
 

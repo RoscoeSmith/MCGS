@@ -164,7 +164,7 @@ std::string board_to_string(const std::vector<bool>& horizontal,const std::vecto
     // add horizontal lines
     for (int h = 0; h < n_cols * (n_rows + 1); h++)
     {
-        if (h != 0 and h % n_cols == 0)
+        if (h != 0 && h % n_cols == 0)
         {
             result += color_to_char(LINE_SEP);
         }
@@ -174,7 +174,7 @@ std::string board_to_string(const std::vector<bool>& horizontal,const std::vecto
     // add vertical lines
     for (int v = 0; v < n_rows * (n_cols + 1); v++)
     {
-        if (v != 0 and v % n_rows == 0)
+        if (v != 0 && v % n_rows == 0)
         {
             result += color_to_char(LINE_SEP);
         }
@@ -206,10 +206,12 @@ public:
 private:
 
     void _next_move(bool init);
+    ::move _gen_move(int position, dots_and_boxes& ref_game);
     
     const dots_and_boxes& _game;
+    dots_and_boxes _local_game;
 
-    int _location;
+    std::vector<::move> _curr_move;
     bool _has_move;
 
 };
@@ -217,11 +219,13 @@ private:
 dots_and_boxes_move_generator::dots_and_boxes_move_generator(const dots_and_boxes& game, bw to_play)
     : multimove_generator(to_play),
     _game(game),
-    _location(0),
+    _local_game(game),
     _has_move(false)
 {
 
-    if(_game.get_shape().first > 0 and _game.get_shape().second > 0)
+    _curr_move = std::vector<int>();
+
+    if(_game.get_shape().first > 0 && _game.get_shape().second > 0)
         _next_move(true);
     
 }
@@ -237,69 +241,139 @@ dots_and_boxes_move_generator::operator bool() const
     return _has_move;
 }
 
-std::vector<::move> dots_and_boxes_move_generator::gen_multimove() const
+::move dots_and_boxes_move_generator::_gen_move(int position, dots_and_boxes& ref_game)
 {
-    std::vector<::move> multimove;
 
     int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second, num_captures = 0;
 
     assert(*this);
-    assert(_location < get_total_moves(n_rows, n_cols));
+    assert(position < get_total_moves(n_rows, n_cols));
 
     // first check if the move is a capture move
-    if(_location < n_rows*(n_cols + 1)) // vertical move
+    if(position < n_rows*(n_cols + 1)) // vertical move
     {
-        if(_location % (n_cols + 1) > 0 && _game.left_capture(_location)) // not on the left side of the board, can check box to the left
+        if(position % (n_cols + 1) > 0 && _game.left_capture(position)) // not on the left side of the board, can check box to the left
             num_captures ++;
         
-        if(_location % (n_cols + 1) < n_cols && _game.right_capture(_location)) // not on the right side of the board, can check the box to the right
+        if(position % (n_cols + 1) < n_cols && _game.right_capture(position)) // not on the right side of the board, can check the box to the right
             num_captures ++;
     }
     else // horizontal move, no more checks necessary since assert passed
     {
-        if((_location - n_rows*(n_cols + 1)) >= n_cols && _game.up_capture(_location)) // not on the top side of the board, can check the box above
+        if((position - n_rows*(n_cols + 1)) >= n_cols && _game.up_capture(position)) // not on the top side of the board, can check the box above
             num_captures++;
         
-        if((_location - n_rows*(n_cols + 1)) < n_rows*n_cols && _game.down_capture(_location)) // not on the bottom of the board, can check box below
+        if((position - n_rows*(n_cols + 1)) < n_rows*n_cols && _game.down_capture(position)) // not on the bottom of the board, can check box below
             num_captures ++;
     }
 
-    multimove.push_back((num_captures << 28) | _location);
+    return ((num_captures << 28) | position);
 
-    return multimove;
+}
 
-} // TODO: rewrite to generate multimoves
+
+
+std::vector<::move> dots_and_boxes_move_generator::gen_multimove() const
+{
+    return _curr_move;
+}
 
 void dots_and_boxes_move_generator::_next_move(bool init)
 {
 
     assert(init || *this);
 
-    std::cout << "in _next_move start " << _location << " " << _has_move << "\n" << _game.pretty_print() << std::endl;
+    std::cout << "in _next_move start " << _has_move << "\n" << _game.pretty_print() << std::endl;
 
     int n_rows = _game.get_shape().first, n_cols = _game.get_shape().second;
 
+    int pos = 0;
+
     _has_move = false;
 
-    if(!init && ++_location > get_total_moves(n_rows, n_cols))
-        return;
-
-
-    while(_location < get_total_moves(n_rows, n_cols))
+    if(init)
     {
 
-        if(!_game.has_been_played(_location))
+        while(pos < get_total_moves(n_rows, n_cols))
         {
-            _has_move = true;
-            break;
+            if(!_local_game.has_been_played(pos))
+            {
+                _has_move = true;
+                ::move temp = _gen_move(pos, _local_game);
+                _curr_move.push_back(temp);
+                _local_game._play(temp, BLACK);
+                break;
+            }
+
+            pos ++;
         }
 
-        _location ++;
+        pos = 0;
+
+        while(!_curr_move.empty() && pos < get_total_moves(n_rows, n_cols) && (_curr_move.back() & 0x30000000)) // the last part of the multimove is a capture we have to keep looking
+        {
+
+            if(!_local_game.has_been_played(pos))
+            {
+                ::move temp = _gen_move(pos, _local_game);
+                _curr_move.push_back(temp);
+                _local_game._play(temp, BLACK);
+                pos = 0;
+                continue;
+            }
+
+            pos ++;
+        }
+
+        return;
 
     }
 
-    std::cout << "in _next_move end " << _location << " " << _has_move << "\n\n" << std::endl;
+    while(!_curr_move.empty())
+    {
 
+        ::move temp = _curr_move.back();
+        _curr_move.pop_back();
+        _local_game._undo_move();
+
+        pos = (temp & (MOVE_LIMIT - 1)) + 1;
+
+        while(pos < get_total_moves(n_rows, n_cols))
+        {
+            if(!_local_game.has_been_played(pos))
+            {
+                _has_move = true;
+                ::move temp = _gen_move(pos, _local_game);
+                _curr_move.push_back(temp);
+                _local_game._play(temp, BLACK);
+                pos = 0;
+            }
+
+            pos ++;
+        }
+
+        if(pos == get_total_moves(n_cols, n_rows))
+            continue;
+
+        while(!_curr_move.empty() && (_curr_move.back() & 0x30000000)) // the last part of the multimove is a capture we have to keep looking
+        {
+
+            if(!_local_game.has_been_played(pos))
+            {
+                ::move temp = _gen_move(pos, _local_game);
+                _curr_move.push_back(temp);
+                _local_game._play(temp, BLACK);
+                pos = 0;
+            }
+
+            pos ++;
+        }
+
+
+    }
+    
+
+    std::cout << "in _next_move end " << _has_move << "\n\n" << std::endl;
 
 }
 
@@ -396,6 +470,25 @@ const int_pair dots_and_boxes::get_shape() const
     return _shape;
 }
 
+void dots_and_boxes::play(const move& m, bw to_play)
+{
+    _play(m, to_play);
+}
+
+
+
+void dots_and_boxes::undo_move()
+{
+    std::vector<::move> moves = last_multimove();
+
+    for(::move m : moves)
+    {
+        _undo_move();
+    }
+
+
+}
+
 void dots_and_boxes::_init_hash(local_hash& hash) const
 {
 
@@ -430,15 +523,13 @@ void dots_and_boxes::_init_hash(local_hash& hash) const
     
 }
 
-void dots_and_boxes::play(const move& m, bw to_play)
+void dots_and_boxes::_play(const move& m, bw to_play)
 {
 
-    std::cout << "in play call" << std::endl;
     game::play(m, to_play);
 
     unsigned int pos = m & (MOVE_LIMIT - 1);
     int num_captures = (m >> 28) & 3;
-
 
     std::cout << "in play start " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
 
@@ -487,69 +578,63 @@ void dots_and_boxes::play(const move& m, bw to_play)
 
 }
 
-void dots_and_boxes::undo_move()
+void dots_and_boxes::_undo_move()
 {
-    // TODO: rewrite to undo multimoves properly
 
-    std::vector<::move> mv = last_multimove();
-    for (std::size_t i = 0; i < mv.size(); i++)
+    ::move m = last_move();
+    game::undo_move();
+
+    bw to_play = cgt_move::get_color(m);
+
+    unsigned int pos = m & (MOVE_LIMIT - 1);
+    int num_captures = (m >> 28) & 3;
+
+    std::cout << "in undo start " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
+
+
+    if(pos < _vertical.size())
     {
-        // ::move m = last_move();
-        ::move m = mv.at(i);
+        assert(_vertical.at(pos));
+        _vertical.at(pos) = false;
 
-        game::undo_move();
-
-        bw to_play = cgt_move::get_color(m);
-
-        unsigned int pos = m & (MOVE_LIMIT - 1);
-        int num_captures = (m >> 28) & 3;
-
-        std::cout << "in undo start " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
-
-
-        if(pos < _vertical.size())
+        if(num_captures != 0)
         {
-            assert(_vertical.at(pos));
-            _vertical.at(pos) = false;
+            if(pos % (_shape.second + 1) > 0) // not on the left side of the board
+                _boxes.at(pos - pos/(_shape.second + 1) - 1) = EMPTY;
 
-            if(num_captures != 0)
-            {
-                if(pos % (_shape.second + 1) > 0) // not on the left side of the board
-                    _boxes.at(pos - pos/(_shape.second + 1) - 1) = EMPTY;
-
-                if(pos % (_shape.second + 1) < static_cast<unsigned int>(_shape.second)) // not on the right side of the board
-                    _boxes.at(pos - pos/(_shape.second + 1)) = EMPTY;
-            }
-
-        }
-        else
-        {
-            assert(_horizontal.at(pos - _vertical.size()));
-            _horizontal.at(pos - _vertical.size()) = false;
-
-
-            if(num_captures != 0)
-            {
-                if((pos - _vertical.size()) >= static_cast<unsigned int>(_shape.second)) // not on the top side of the board
-                    _boxes.at(pos - _vertical.size() - _shape.second) = EMPTY;
-
-                if((pos - _vertical.size()) < static_cast<unsigned int>(_shape.first*_shape.second)) // not on the bottom of the board, can check box below
-                    _boxes.at(pos - _vertical.size()) = EMPTY;
-            }
-
+            if(pos % (_shape.second + 1) < static_cast<unsigned int>(_shape.second)) // not on the right side of the board
+                _boxes.at(pos - pos/(_shape.second + 1)) = EMPTY;
         }
 
-        if(to_play == BLACK)
-        {
-            _left_score -= num_captures;
-        }
-        else
-        {
-            _right_score -= num_captures;
-        }
-        
-        std::cout << "in undo end " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
     }
+    else
+    {
+        assert(_horizontal.at(pos - _vertical.size()));
+        _horizontal.at(pos - _vertical.size()) = false;
+
+
+        if(num_captures != 0)
+        {
+            if((pos - _vertical.size()) >= static_cast<unsigned int>(_shape.second)) // not on the top side of the board
+                _boxes.at(pos - _vertical.size() - _shape.second) = EMPTY;
+
+            if((pos - _vertical.size()) < static_cast<unsigned int>(_shape.first*_shape.second)) // not on the bottom of the board, can check box below
+                _boxes.at(pos - _vertical.size()) = EMPTY;
+        }
+
+    }
+
+    if(to_play == BLACK)
+    {
+        _left_score -= num_captures;
+    }
+    else
+    {
+        _right_score -= num_captures;
+    }
+    
+    std::cout << "in undo end " << pos << " " << num_captures << " " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
+
 }
 
 std::string dots_and_boxes::board_as_string() const
