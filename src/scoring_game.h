@@ -9,7 +9,7 @@
 class scoring_game : public game
 {
 public:
-    virtual int count_score() const = 0;
+    virtual int count_score(bw to_play) const = 0;
 
 protected:
 

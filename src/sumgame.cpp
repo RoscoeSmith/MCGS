@@ -26,8 +26,6 @@
 #include <ctime>
 #include <iostream>
 #include <memory>
-// #include <variant>
-#include <bitset>
 
 #include <thread>
 #include <future>
@@ -53,6 +51,7 @@ std::shared_ptr<ttable_sumgame> sumgame::_tt(nullptr);
 // typedef std::variant<move, std::vector<move>> mmove;
 const bool TIE_WL = false;
 // const bool TIE_WL = true;
+const int NP_WIN_SCORE = 1;
 
 //---------------------------------------------------------------------------
 
@@ -426,7 +425,8 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
 
     sumgame_move_generator& mg = *mgp;
 
-    std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n---------------------\n" << std::endl;
+    std::cout << "ptm: " << toplay << std::endl;
+    std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n - - - - - - - - - -\n" << dynamic_cast<dots_and_boxes*>(_subgames.at(1))->pretty_print() << "\n---------------------\n" << std::endl;
 
 
     for (; mg; ++mg)
@@ -461,24 +461,68 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
         }
     }
 
+    /*
+
+        How to handle sums of scoring and non-scoring games?
+        For sums of scoring games we can just sum each game's score
+
+    */
+
+    // no sumgame moves i.e. terminal position
+    // all normal-play games are losses
+
+    int sum_score = 0;
+    for (game* sg : _subgames)
+    {
+        // check if subgame is score-counting
+        scoring_game* ssg = dynamic_cast<scoring_game*>(sg);
+        if (ssg != nullptr)
+        {
+            int subgame_score = ssg->count_score(toplay);
+            sum_score = sum_score + subgame_score;
+        }
+        else
+        {
+            // sumgame is normal-play, score value is -NP_WIN_SCORE for ptm
+            sum_score = sum_score - NP_WIN_SCORE;   
+        }
+    }
+    std::cout << "in terminal position, score for ptm: " << sum_score << std::endl;
+    
     bool res;
-    int score_value = dynamic_cast<scoring_game*>(_subgames.at(0))->count_score();
-    if (toplay == WHITE)
+    if (sum_score > 0)
     {
-        score_value = -score_value;
-    }
-    if (score_value == 0)  // score is 0, tie
-    {
-        res = TIE_WL;
-    }
-    else if (score_value > 0)  // negascore is positive, win for ptm
-    {
+        // win for player to move
         res = true;
     }
-    else  // negascore is negative, loss for ptm
+    else if (sum_score < 0)
     {
+        // loss for player to move
         res = false;
     }
+    else
+    {
+        // tie for player to move
+        res = TIE_WL;
+    }
+
+    // int score_value = dynamic_cast<scoring_game*>(_subgames.at(0))->count_score();
+    // if (toplay == WHITE)
+    // {
+    //     score_value = -score_value;
+    // }
+    // if (score_value == 0)  // score is 0, tie
+    // {
+    //     res = TIE_WL;
+    // }
+    // else if (score_value > 0)  // negascore is positive, win for ptm
+    // {
+    //     res = true;
+    // }
+    // else  // negascore is negative, loss for ptm
+    // {
+    //     res = false;
+    // }
 
     // if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() > 0 && toplay == BLACK)
     // {
@@ -500,8 +544,6 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
     // {
     //     res = false;
     // }
-
-    
 
     if (tt_result.has_value())
     {
@@ -757,24 +799,10 @@ void sumgame::undo_move()
     {
         const std::vector<move> mv = s->last_multimove();
         
-        // std::cout << "mv (last_multimove): ";
-        // for (const auto& x : mv)
-        // {
-        //     std::cout << x << " ";
-        // }
-        // std::cout << std::endl;
-        // std::cout << "sm.v: ";
-        // for (const auto& x : sm.v)
-        // {
-        //     std::cout << x << " ";
-        // }
-        // std::cout << std::endl;
-
         for (std::size_t i = 0; i < mv.size(); i++)
         {
             const move m = sm.v.at(i);
             const move subm = cgt_move::decode(mv.at(i));
-            //std::cout << "in multimove assert\nm:\t" << std::bitset<32>(m) << "\nsubm:\t" << std::bitset<32>(subm) << "\nsm.v:\t" << std::bitset<32>(sm.v.at(i)) << std::endl;
 
             assert(                                                         //
                 m == subm ||                                             //

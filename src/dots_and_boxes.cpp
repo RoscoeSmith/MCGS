@@ -1,4 +1,5 @@
 #include "dots_and_boxes.h"
+#include "cgt_basics.h"
 #include "game.h"
 #include "scoring_game.h"
 #include "cgt_move.h"
@@ -479,9 +480,14 @@ game* dots_and_boxes::inverse() const
     assert(false);
 }
 
-int dots_and_boxes::count_score() const
+int dots_and_boxes::count_score(bw to_play) const
 {
-    return _left_score - _right_score;
+    int score = _left_score - _right_score;
+    if (to_play == WHITE)
+    {
+        score = -score;
+    }
+    return score;
 }
 
 const int dots_and_boxes::_get_total_moves() const

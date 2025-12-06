@@ -18,7 +18,7 @@ public:
     dots_and_boxes(int n_rows, int n_cols); // for new game
     dots_and_boxes(const std::string& game_as_string); // for game as string
 
-    void play(const move& m, bw to_play);
+    void play(const move& m, bw to_play) override;
     void undo_move() override;
     
     void undo_move_single();
@@ -33,7 +33,7 @@ public:
 
     game* inverse() const override;
 
-    int count_score() const override;
+    int count_score(bw to_play) const override;
 
     const int_pair get_shape() const;
     std::string board_as_string() const;
