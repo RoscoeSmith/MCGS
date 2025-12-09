@@ -32,8 +32,8 @@ public:
         void init_entry();
         void init_entry(const Entry& entry);
 
-        bool get_bool(size_t bool_idx) const;
-        void set_bool(size_t bool_idx, bool new_val);
+        int get_value(size_t val_idx) const;
+        void set_value(size_t val_idx, int new_val);
 
     private:
         search_result() = delete;
@@ -48,7 +48,7 @@ public:
         friend ttable<Entry>;
     };
 
-    ttable(size_t index_bits, size_t entry_bools);
+    ttable(size_t index_bits, size_t entry_vals);
     ~ttable();
 
     // no copy/move
@@ -63,18 +63,18 @@ public:
     std::optional<Entry> get(hash_t hash) const;
 
     size_t n_index_bits() const;
-    size_t n_entry_bools() const;
+    size_t n_entry_vals() const;
 
 private:
     inline hash_t _extract_index(hash_t hash) const;
     inline hash_t _extract_tag(hash_t hash) const;
 
-    inline void _get_bool_indices(hash_t entry_idx, size_t bool_idx,
-                                  size_t& bools_arr_idx,
+    inline void _get_value_indices(hash_t entry_idx, size_t val_idx,
+                                  size_t& vals_arr_idx,
                                   size_t& element_bit_no) const;
 
-    bool _get_bool(hash_t entry_idx, size_t bool_idx) const;
-    void _set_bool(hash_t entry_idx, size_t bool_idx, bool new_val);
+    int _get_value(hash_t entry_idx, size_t val_idx) const;
+    void _set_value(hash_t entry_idx, size_t val_idx, int new_val);
 
     hash_t _get_tag(hash_t entry_idx) const;
     void _set_tag(hash_t entry_idx, hash_t tag);
@@ -97,18 +97,18 @@ private:
     uint8_t* _tags_arr;
     size_t _tags_arr_size;
 
-    const size_t _bools_per_entry;
-    unsigned int* _bools_arr;
-    size_t _bools_arr_size;
+    const size_t _vals_per_entry;
+    unsigned int* _vals_arr;
+    size_t _vals_arr_size;
 };
 
 ////////////////////////////////////////////////// ttable<Entry> implementation
 template <class Entry>
-ttable<Entry>::ttable(size_t index_bits, size_t n_packed_bools)
+ttable<Entry>::ttable(size_t index_bits, size_t n_packed_vals)
     : _n_index_bits(index_bits),
       _n_tag_bits(size_in_bits<hash_t>() - index_bits),
       _n_entries(1 << index_bits),
-      _bools_per_entry(n_packed_bools)
+      _vals_per_entry(n_packed_vals)
 {
     assert(index_bits > 0);
     // strictly less -- avoid shifting entire width of hash_t
@@ -129,9 +129,9 @@ ttable<Entry>::ttable(size_t index_bits, size_t n_packed_bools)
 
     _tags_arr_size = _n_entries * _bytes_per_tag;
 
-    // bools
-    const size_t total_bools = _n_entries * _bools_per_entry;
-    _bools_arr_size = 1 + total_bools / size_in_bits<unsigned int>();
+    // vals
+    const size_t total_vals = _n_entries * _vals_per_entry;
+    _vals_arr_size = 1 + total_vals / size_in_bits<unsigned int>();
 
     //// Estimate memory cost
     // TODO: DEBUG PRINTING
@@ -140,7 +140,7 @@ ttable<Entry>::ttable(size_t index_bits, size_t n_packed_bools)
         uint64_t byte_count = 0;
         byte_count += _entries_arr_size * sizeof(Entry);
         byte_count += _tags_arr_size * sizeof(uint8_t);
-        byte_count += _bools_arr_size * sizeof(unsigned int);
+        byte_count += _vals_arr_size * sizeof(unsigned int);
         double byte_count_formatted = ((double) byte_count) / (1024.0 * 1024.0);
         std::cout << "Estimated table size: " << byte_count_formatted;
         std::cout << " MiB" << std::endl;
@@ -185,9 +185,9 @@ ttable<Entry>::ttable(size_t index_bits, size_t n_packed_bools)
         // i % N_RANDOM_BYTES (because latter number power of 2)
         _tags_arr[i] = random_bytes[i & (N_RANDOM_BYTES - 1)];
 
-    _bools_arr = new unsigned int[_bools_arr_size];
-    for (size_t i = 0; i < _bools_arr_size; i++)
-        _bools_arr[i] = 0;
+    _vals_arr = new unsigned int[_vals_arr_size];
+    for (size_t i = 0; i < _vals_arr_size; i++)
+        _vals_arr[i] = 0;
 }
 
 template <class Entry>
@@ -195,7 +195,7 @@ ttable<Entry>::~ttable()
 {
     delete[] _entries_arr;
     delete[] _tags_arr;
-    delete[] _bools_arr;
+    delete[] _vals_arr;
 }
 
 template <class Entry>
@@ -213,8 +213,8 @@ typename ttable<Entry>::search_result ttable<Entry>::search(hash_t hash)
 template <class Entry>
 void ttable<Entry>::store(hash_t hash, const Entry& entry)
 {
-    // avoid potentially resetting bools
-    THROW_ASSERT_DEBUG(_bools_per_entry == 0);
+    // avoid potentially resetting vals
+    THROW_ASSERT_DEBUG(_vals_per_entry == 0);
     ttable<Entry>::search_result tt_result = search(hash);
     tt_result.set_entry(entry);
 }
@@ -238,9 +238,9 @@ inline size_t ttable<Entry>::n_index_bits() const
 }
 
 template <class Entry>
-inline size_t ttable<Entry>::n_entry_bools() const
+inline size_t ttable<Entry>::n_entry_vals() const
 {
-    return _bools_per_entry;
+    return _vals_per_entry;
 }
 
 template <class Entry>
@@ -259,51 +259,51 @@ inline hash_t ttable<Entry>::_extract_tag(hash_t hash) const
 }
 
 template <class Entry>
-inline void ttable<Entry>::_get_bool_indices(hash_t entry_idx, size_t bool_idx,
-                                             size_t& bools_arr_idx,
+inline void ttable<Entry>::_get_value_indices(hash_t entry_idx, size_t val_idx,
+                                             size_t& vals_arr_idx,
                                              size_t& element_bit_no) const
 {
     assert(entry_idx < _n_entries);
-    assert(bool_idx < _bools_per_entry);
+    assert(val_idx < _vals_per_entry);
 
-    size_t global_bit_idx = entry_idx * _bools_per_entry + bool_idx;
-    bools_arr_idx = global_bit_idx / size_in_bits<unsigned int>();
+    size_t global_bit_idx = entry_idx * _vals_per_entry + val_idx;
+    vals_arr_idx = global_bit_idx / size_in_bits<unsigned int>();
     element_bit_no = global_bit_idx % size_in_bits<unsigned int>();
 
-    assert(bools_arr_idx < _bools_arr_size);
+    assert(vals_arr_idx < _vals_arr_size);
     assert(element_bit_no < size_in_bits<unsigned int>());
 }
 
 template <class Entry>
-bool ttable<Entry>::_get_bool(hash_t entry_idx, size_t bool_idx) const
+int ttable<Entry>::_get_value(hash_t entry_idx, size_t val_idx) const
 {
     assert(entry_idx < _n_entries);
-    THROW_ASSERT_DEBUG(bool_idx < _bools_per_entry);
+    THROW_ASSERT_DEBUG(val_idx < _vals_per_entry);
 
-    size_t bools_arr_idx;
+    size_t vals_arr_idx;
     size_t element_bit_no;
-    _get_bool_indices(entry_idx, bool_idx, bools_arr_idx, element_bit_no);
+    _get_value_indices(entry_idx, val_idx, vals_arr_idx, element_bit_no);
 
-    assert(bools_arr_idx < _bools_arr_size);
-    const unsigned int& element = _bools_arr[bools_arr_idx];
+    assert(vals_arr_idx < _vals_arr_size);
+    const unsigned int& element = _vals_arr[vals_arr_idx];
     return (element >> element_bit_no) & 0x1;
 }
 
 template <class Entry>
-void ttable<Entry>::_set_bool(hash_t entry_idx, size_t bool_idx, bool new_val)
+void ttable<Entry>::_set_value(hash_t entry_idx, size_t val_idx, int new_val)
 {
     assert(entry_idx < _n_entries);
-    THROW_ASSERT_DEBUG(bool_idx < _bools_per_entry);
+    THROW_ASSERT_DEBUG(val_idx < _vals_per_entry);
 
-    size_t bools_arr_idx;
+    size_t vals_arr_idx;
     size_t element_bit_no;
-    _get_bool_indices(entry_idx, bool_idx, bools_arr_idx, element_bit_no);
+    _get_value_indices(entry_idx, val_idx, vals_arr_idx, element_bit_no);
 
     const unsigned int bit_mask = ((unsigned int) 1) << element_bit_no;
     const unsigned int inv_bit_mask = ~bit_mask;
 
-    assert(bools_arr_idx < _bools_arr_size);
-    unsigned int& element = _bools_arr[bools_arr_idx];
+    assert(vals_arr_idx < _vals_arr_size);
+    unsigned int& element = _vals_arr[vals_arr_idx];
 
     if (new_val)
         element |= bit_mask; // set bit
@@ -366,8 +366,8 @@ void ttable<Entry>::_init_entry(hash_t index, hash_t tag, const Entry& entry)
 
     _set_tag(index, tag);
 
-    for (size_t i = 0; i < _bools_per_entry; i++)
-        _set_bool(index, i, false);
+    for (size_t i = 0; i < _vals_per_entry; i++)
+        _set_value(index, i, 0);
 
     Entry* entry_ptr = _get_entry_ptr(index);
     *entry_ptr = entry;
@@ -423,17 +423,17 @@ void ttable<Entry>::search_result::init_entry(const Entry& entry)
 }
 
 template <class Entry>
-bool ttable<Entry>::search_result::get_bool(size_t bool_idx) const
+int ttable<Entry>::search_result::get_value(size_t val_idx) const
 {
     THROW_ASSERT_DEBUG(entry_valid());
-    return _table._get_bool(_entry_idx, bool_idx);
+    return _table._get_value(_entry_idx, val_idx);
 }
 
 template <class Entry>
-void ttable<Entry>::search_result::set_bool(size_t bool_idx, bool new_val)
+void ttable<Entry>::search_result::set_value(size_t val_idx, int new_val)
 {
     THROW_ASSERT_DEBUG(entry_valid());
-    _table._set_bool(_entry_idx, bool_idx, new_val);
+    _table._set_value(_entry_idx, val_idx, new_val);
 }
 
 template <class Entry>
