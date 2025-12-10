@@ -266,7 +266,7 @@ bool sumgame::solve() const
     optional<solve_result> result = sum.solve_with_timeout(0);
     assert(result.has_value());
 
-    return result.value().value;
+    return result.value().win;
 }
 
 /*
@@ -418,8 +418,8 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
 
     if (tt_result.has_value() && tt_result->entry_valid())
     {
-        std::cout << "TT hit, value = " << tt_result->get_value(0) << std::endl;
-        return tt_result->get_value(0);
+        std::cout << "TT hit, value = " << tt_result->get_bool(0) << std::endl;
+        return tt_result->get_bool(0);
     }
 
     const bw toplay = to_play();
@@ -442,7 +442,7 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
 
         solve_result result(0);
 
-        bool found = find_static_winner(result.value);
+        bool found = find_static_winner(result.win);
 
         if (!found)
         {
@@ -451,19 +451,19 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
             if (!child_result.has_value() || _over_time())
                 return solve_result::invalid();
 
-            result.value = -child_result.value().value;
+            result.win = not child_result.value().win;
         }
 
-        option_scores.push_back(result.value);
+        option_scores.push_back(result.win);
         
         undo_move();
 
-        if (result.value > 0)
+        if (result.win > 0)
         {
             if (tt_result.has_value())
             {
                 tt_result->init_entry();
-                tt_result->set_value(0, result.value);
+                tt_result->set_bool(0, result.win);
             }
             return result;
         }
@@ -493,7 +493,7 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
     if (tt_result.has_value())
     {
         tt_result->init_entry();
-        tt_result->set_value(0, sum_wl);
+        tt_result->set_bool(0, sum_wl);
     }
 
     return solve_result(sum_wl);
