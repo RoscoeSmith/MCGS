@@ -305,7 +305,7 @@ void ttable<Entry>::_set_value(hash_t entry_idx, size_t val_idx, int new_val)
     assert(vals_arr_idx < _vals_arr_size);
     unsigned int& element = _vals_arr[vals_arr_idx];
 
-    if (new_val)
+    if (new_val > 0)
         element |= bit_mask; // set bit
     else
         element &= inv_bit_mask; // unset bit

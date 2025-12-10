@@ -418,7 +418,7 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
 
     if (tt_result.has_value() && tt_result->entry_valid())
     {
-        std::cout << "TT hit!" << std::endl;
+        std::cout << "TT hit, value = " << tt_result->get_value(0) << std::endl;
         return tt_result->get_value(0);
     }
 
@@ -428,9 +428,9 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
         create_sum_move_generator(toplay));
 
     sumgame_move_generator& mg = *mgp;
+    std::vector<int> option_scores;
 
     std::cout << "ptm: " << toplay << std::endl;
-    
     std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n---------------------\n" << std::endl;
     // std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n - - - - - - - - - -\n" << dynamic_cast<dots_and_boxes*>(_subgames.at(1))->pretty_print() << "\n---------------------\n" << std::endl;
 
@@ -440,7 +440,7 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
         const sumgame_move m = mg.gen_sum_move();
         play_sum(m, toplay);
 
-        solve_result result(false);
+        solve_result result(0);
 
         bool found = find_static_winner(result.value);
 
@@ -454,6 +454,8 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
             result.value = -child_result.value().value;
         }
 
+        option_scores.push_back(result.value);
+        
         undo_move();
 
         if (result.value > 0)
@@ -467,18 +469,26 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
         }
     }
 
-    /*
-
-        How to handle sums of scoring and non-scoring games?
-        For sums of scoring games we can just sum each game's score
-
-    */
-
-    // terminal position
-    int sum_wl = _terminal_value(toplay);
-
-    std::cout << "in terminal position, result for ptm (" << toplay << "): " << sum_wl << std::endl;
-    cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << endl;
+    int sum_wl = 0;
+    auto max_it = std::max_element(option_scores.begin(), option_scores.end());
+    if (max_it == option_scores.end())
+    {
+        // no options for player to move, get the score of each subgame
+        sum_wl = _terminal_value(toplay);
+        std::cout << "in terminal position, result for ptm (" << toplay << "): " << sum_wl << std::endl;
+        cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << endl;
+    }
+    else
+    {
+        sum_wl = *max_it;
+        std::cout << "in end of subtree search, result for ptm (" << toplay << "): " << sum_wl << std::endl;
+        cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "option scores: [ ";
+        for (auto x : option_scores)
+        {
+            cout << x << " ";
+        }
+        cout << "]\n" << endl;
+    }
     
     if (tt_result.has_value())
     {
@@ -816,6 +826,7 @@ int sumgame::_terminal_value(bw to_play) const {
             scoring_game* ssg = dynamic_cast<scoring_game*>(sg);
             if (ssg != nullptr)
             {
+                assert(ssg->is_terminal());
                 int subgame_score = ssg->count_score(to_play);
                 sum_score = sum_score + subgame_score;
             }

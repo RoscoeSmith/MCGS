@@ -34,6 +34,7 @@ public:
     game* inverse() const override;
 
     int count_score(bw to_play) const override;
+    bool is_terminal() const override;
 
     const int_pair get_shape() const;
     std::string board_as_string() const;

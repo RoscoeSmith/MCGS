@@ -10,6 +10,7 @@ class scoring_game : public game
 {
 public:
     virtual int count_score(bw to_play) const = 0;
+    virtual bool is_terminal() const = 0;
 
 protected:
 

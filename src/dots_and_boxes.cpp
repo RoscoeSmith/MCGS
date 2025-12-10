@@ -490,6 +490,17 @@ int dots_and_boxes::count_score(bw to_play) const
     return score;
 }
 
+bool dots_and_boxes::is_terminal() const {
+    for (auto& v : _boxes)
+    {
+        // if any box is uncaptured, game is not terminal
+        if (v == EMPTY)
+            return false;
+    }
+    // if all boxes are captured, game is terminal
+    return true;
+}
+
 const int dots_and_boxes::_get_total_moves() const
 {
     return get_total_moves(_shape.first, _shape.second);
