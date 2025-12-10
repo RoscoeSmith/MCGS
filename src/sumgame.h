@@ -75,7 +75,8 @@ struct solve_result
 
     solve_result() = delete;
 
-    solve_result(bool win) : win(win) {}
+    solve_result(bool win) : value(int(win)) {}
+    solve_result(int value) : value(value) {}
 
     // return this on timeout
     inline static std::optional<solve_result> invalid()
@@ -83,7 +84,7 @@ struct solve_result
         return std::optional<solve_result>();
     }
 
-    bool win;
+    int value;
 };
 
 //////////////////////////////////////// sumgame
@@ -151,6 +152,8 @@ private:
 
     bool _over_time() const;
     game* _pop_game();
+
+    int _terminal_value(bw to_play) const;
 
     // For root level call, depth should be 0. For recursive calls,
     // pass depth + 1
@@ -271,8 +274,8 @@ inline void sumgame::reset_ttable()
     }
 
     const size_t index_bits = _tt->n_index_bits();
-    const size_t entry_bools = _tt->n_entry_bools();
-    _tt.reset(new ttable_sumgame(index_bits, entry_bools));
+    const size_t entry_vals = _tt->n_entry_vals();
+    _tt.reset(new ttable_sumgame(index_bits, entry_vals));
 }
 
 //---------------------------------------------------------------------------
