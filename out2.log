@@ -1,0 +1,323 @@
+Found database file: "database.bin". Loading...
+Database file loaded
+Database: 
+Types in mapper: 
+clobber_1xn -> 1
+nogo_1xn -> 2
+clobber -> 4
+elephants -> 3
+nogo -> 5
+
+Partizan game types: 5
+Game type: 3 Count: 86015
+Game type: 1 Count: 33120
+Game type: 2 Count: 44113
+Game type: 4 Count: 11069
+Game type: 5 Count: 10689
+
+	dots_and_boxes:..|..|..#..|..|..#....
+Player: B
+Expected: None
+in solve_with_timeout, depth = 1, alpha: -inf, beta: inf
+in solve_with_timeout, depth = 2, alpha: -inf, beta: inf
+in solve_with_timeout, depth = 3, alpha: -inf, beta: inf
+in solve_with_timeout, depth = 4, alpha: -inf, beta: inf
+in solve_with_timeout, depth = 5, alpha: -inf, beta: inf
+in solve_with_timeout, depth = 6, alpha: -inf, beta: inf
+in solve_with_timeout, depth = 7, alpha: -inf, beta: inf
+in solve_with_timeout, depth = 8, alpha: -inf, beta: inf
+in solve_with_timeout, depth = 9, alpha: -inf, beta: inf
+in solve_with_timeout, depth = 10, alpha: -inf, beta: inf
+in solve_with_timeout, depth = 10, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 10, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 10, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 11, alpha: 4, beta: inf
+	doing AB cut, depth: 10, ptm: 1, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 10, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 11, alpha: 4, beta: inf
+	doing AB cut, depth: 10, ptm: 1, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 10, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 10, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 10, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 11, alpha: 4, beta: inf
+	doing AB cut, depth: 10, ptm: 1, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 10, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 10, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 11, alpha: 4, beta: inf
+	doing AB cut, depth: 10, ptm: 1, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 10, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 11, alpha: 4, beta: inf
+	doing AB cut, depth: 10, ptm: 1, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 10, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 11, alpha: 4, beta: inf
+	doing AB cut, depth: 10, ptm: 1, alpha: -inf, beta: -4
+in solve_with_timeout, depth = 9, alpha: -inf, beta: 4
+in solve_with_timeout, depth = 10, alpha: -4, beta: inf
+in solve_with_timeout, depth = 10, alpha: -4, beta: -2
+in solve_with_timeout, depth = 10, alpha: -4, beta: -2
+in solve_with_timeout, depth = 10, alpha: -4, beta: -2
+in solve_with_timeout, depth = 11, alpha: 2, beta: 4
+	doing AB cut, depth: 10, ptm: 1, alpha: -4, beta: -2
+in solve_with_timeout, depth = 10, alpha: -4, beta: -2
+in solve_with_timeout, depth = 11, alpha: 2, beta: 4
+	doing AB cut, depth: 10, ptm: 1, alpha: -4, beta: -2
+in solve_with_timeout, depth = 9, alpha: -inf, beta: 2
+in solve_with_timeout, depth = 10, alpha: -2, beta: inf
+	doing AB cut, depth: 9, ptm: 0, alpha: -inf, beta: 2
+in solve_with_timeout, depth = 9, alpha: -inf, beta: 2
+in solve_with_timeout, depth = 10, alpha: -2, beta: inf
+in solve_with_timeout, depth = 10, alpha: -2, beta: -0
+in solve_with_timeout, depth = 11, alpha: 0, beta: 2
+	doing AB cut, depth: 10, ptm: 1, alpha: -2, beta: -0
+in solve_with_timeout, depth = 9, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 10, alpha: 0, beta: inf
+	doing AB cut, depth: 9, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 9, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 10, alpha: 0, beta: inf
+in solve_with_timeout, depth = 10, alpha: 0, beta: 4
+	doing AB cut, depth: 9, ptm: 0, alpha: -4, beta: -0
+in solve_with_timeout, depth = 9, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 10, alpha: 0, beta: inf
+in solve_with_timeout, depth = 10, alpha: 0, beta: 4
+	doing AB cut, depth: 9, ptm: 0, alpha: -4, beta: -0
+in solve_with_timeout, depth = 9, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 10, alpha: 0, beta: inf
+	doing AB cut, depth: 9, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 9, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 10, alpha: 0, beta: inf
+in solve_with_timeout, depth = 10, alpha: 0, beta: 4
+in solve_with_timeout, depth = 11, alpha: -4, beta: -0
+in solve_with_timeout, depth = 11, alpha: -4, beta: -0
+in solve_with_timeout, depth = 12, alpha: 0, beta: 4
+	doing AB cut, depth: 11, ptm: 0, alpha: -4, beta: -0
+	doing AB cut, depth: 9, ptm: 0, alpha: -4, beta: -0
+in solve_with_timeout, depth = 9, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 10, alpha: 0, beta: inf
+in solve_with_timeout, depth = 10, alpha: 0, beta: 4
+in solve_with_timeout, depth = 10, alpha: 0, beta: 2
+	doing AB cut, depth: 9, ptm: 0, alpha: -2, beta: -0
+in solve_with_timeout, depth = 8, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 9, alpha: 0, beta: inf
+in solve_with_timeout, depth = 9, alpha: 0, beta: 4
+in solve_with_timeout, depth = 10, alpha: -4, beta: -0
+	doing AB cut, depth: 9, ptm: 0, alpha: 0, beta: 4
+in solve_with_timeout, depth = 9, alpha: 0, beta: 4
+in solve_with_timeout, depth = 10, alpha: -4, beta: -0
+in solve_with_timeout, depth = 10, alpha: -4, beta: -2
+in solve_with_timeout, depth = 10, alpha: -4, beta: -2
+in solve_with_timeout, depth = 11, alpha: 2, beta: 4
+	doing AB cut, depth: 10, ptm: 1, alpha: -4, beta: -2
+in solve_with_timeout, depth = 10, alpha: -4, beta: -2
+in solve_with_timeout, depth = 10, alpha: -4, beta: -2
+in solve_with_timeout, depth = 11, alpha: 2, beta: 4
+	doing AB cut, depth: 10, ptm: 1, alpha: -4, beta: -2
+in solve_with_timeout, depth = 9, alpha: 0, beta: 2
+in solve_with_timeout, depth = 10, alpha: -2, beta: -0
+	doing AB cut, depth: 9, ptm: 0, alpha: 0, beta: 2
+in solve_with_timeout, depth = 9, alpha: 0, beta: 2
+in solve_with_timeout, depth = 10, alpha: -2, beta: -0
+in solve_with_timeout, depth = 10, alpha: -2, beta: -0
+	doing AB cut, depth: 9, ptm: 0, alpha: 0, beta: 2
+in solve_with_timeout, depth = 9, alpha: 0, beta: 2
+in solve_with_timeout, depth = 10, alpha: -2, beta: -0
+in solve_with_timeout, depth = 10, alpha: -2, beta: -0
+in solve_with_timeout, depth = 11, alpha: 0, beta: 2
+	doing AB cut, depth: 10, ptm: 1, alpha: -2, beta: -0
+	doing AB cut, depth: 8, ptm: 1, alpha: -2, beta: -0
+in solve_with_timeout, depth = 8, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 9, alpha: 0, beta: inf
+in solve_with_timeout, depth = 9, alpha: 0, beta: 2
+in solve_with_timeout, depth = 9, alpha: 0, beta: 2
+	doing AB cut, depth: 8, ptm: 1, alpha: -2, beta: -0
+in solve_with_timeout, depth = 8, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 9, alpha: 0, beta: inf
+in solve_with_timeout, depth = 9, alpha: 0, beta: 4
+in solve_with_timeout, depth = 9, alpha: 0, beta: 2
+in solve_with_timeout, depth = 9, alpha: 0, beta: 2
+in solve_with_timeout, depth = 9, alpha: 0, beta: 2
+	doing AB cut, depth: 8, ptm: 1, alpha: -2, beta: -0
+in solve_with_timeout, depth = 8, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 9, alpha: 0, beta: inf
+	doing AB cut, depth: 8, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 8, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 9, alpha: 0, beta: inf
+in solve_with_timeout, depth = 9, alpha: 0, beta: 4
+in solve_with_timeout, depth = 10, alpha: -4, beta: -0
+in solve_with_timeout, depth = 10, alpha: -4, beta: -0
+in solve_with_timeout, depth = 11, alpha: 0, beta: 4
+	doing AB cut, depth: 10, ptm: 1, alpha: -4, beta: -0
+in solve_with_timeout, depth = 10, alpha: -4, beta: -0
+in solve_with_timeout, depth = 11, alpha: 0, beta: 4
+	doing AB cut, depth: 10, ptm: 1, alpha: -4, beta: -0
+in solve_with_timeout, depth = 10, alpha: -4, beta: -0
+in solve_with_timeout, depth = 11, alpha: 0, beta: 4
+	doing AB cut, depth: 10, ptm: 1, alpha: -4, beta: -0
+in solve_with_timeout, depth = 10, alpha: -4, beta: -0
+in solve_with_timeout, depth = 11, alpha: 0, beta: 4
+in solve_with_timeout, depth = 12, alpha: -4, beta: -0
+	doing AB cut, depth: 11, ptm: 0, alpha: 0, beta: 4
+in solve_with_timeout, depth = 11, alpha: 0, beta: 4
+	doing AB cut, depth: 10, ptm: 1, alpha: -4, beta: -0
+in solve_with_timeout, depth = 10, alpha: -4, beta: -0
+in solve_with_timeout, depth = 11, alpha: 0, beta: 4
+in solve_with_timeout, depth = 12, alpha: -4, beta: -0
+	doing AB cut, depth: 11, ptm: 0, alpha: 0, beta: 4
+in solve_with_timeout, depth = 11, alpha: 0, beta: 4
+	doing AB cut, depth: 10, ptm: 1, alpha: -4, beta: -0
+	doing AB cut, depth: 8, ptm: 1, alpha: -4, beta: -0
+in solve_with_timeout, depth = 7, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 8, alpha: 0, beta: inf
+	doing AB cut, depth: 7, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 7, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 8, alpha: 0, beta: inf
+	doing AB cut, depth: 7, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 7, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 8, alpha: 0, beta: inf
+	doing AB cut, depth: 7, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 7, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 8, alpha: 0, beta: inf
+	doing AB cut, depth: 7, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 7, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 8, alpha: 0, beta: inf
+	doing AB cut, depth: 7, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 7, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 8, alpha: 0, beta: inf
+	doing AB cut, depth: 7, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 7, alpha: 0, beta: inf
+	doing AB cut, depth: 6, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 7, alpha: 0, beta: inf
+	doing AB cut, depth: 6, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 7, alpha: 0, beta: inf
+	doing AB cut, depth: 6, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 7, alpha: 0, beta: inf
+	doing AB cut, depth: 6, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 7, alpha: 0, beta: inf
+	doing AB cut, depth: 6, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 7, alpha: 0, beta: inf
+	doing AB cut, depth: 6, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 7, alpha: 0, beta: inf
+	doing AB cut, depth: 6, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: 0, beta: inf
+	doing AB cut, depth: 5, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: 0, beta: inf
+	doing AB cut, depth: 5, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: 0, beta: inf
+	doing AB cut, depth: 5, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: 0, beta: inf
+	doing AB cut, depth: 5, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: 0, beta: inf
+	doing AB cut, depth: 5, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: 0, beta: inf
+	doing AB cut, depth: 5, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: 0, beta: inf
+	doing AB cut, depth: 5, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 6, alpha: 0, beta: inf
+	doing AB cut, depth: 5, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: 0, beta: inf
+	doing AB cut, depth: 4, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: 0, beta: inf
+	doing AB cut, depth: 4, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: 0, beta: inf
+	doing AB cut, depth: 4, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: 0, beta: inf
+	doing AB cut, depth: 4, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: 0, beta: inf
+	doing AB cut, depth: 4, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: 0, beta: inf
+	doing AB cut, depth: 4, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: 0, beta: inf
+	doing AB cut, depth: 4, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: 0, beta: inf
+	doing AB cut, depth: 4, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 5, alpha: 0, beta: inf
+	doing AB cut, depth: 4, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: 0, beta: inf
+	doing AB cut, depth: 3, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: 0, beta: inf
+	doing AB cut, depth: 3, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: 0, beta: inf
+	doing AB cut, depth: 3, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: 0, beta: inf
+	doing AB cut, depth: 3, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: 0, beta: inf
+	doing AB cut, depth: 3, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: 0, beta: inf
+	doing AB cut, depth: 3, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: 0, beta: inf
+	doing AB cut, depth: 3, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: 0, beta: inf
+	doing AB cut, depth: 3, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: 0, beta: inf
+	doing AB cut, depth: 3, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 4, alpha: 0, beta: inf
+	doing AB cut, depth: 3, ptm: 0, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 2, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: 0, beta: inf
+	doing AB cut, depth: 2, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 2, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: 0, beta: inf
+	doing AB cut, depth: 2, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 2, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: 0, beta: inf
+	doing AB cut, depth: 2, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 2, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: 0, beta: inf
+	doing AB cut, depth: 2, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 2, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: 0, beta: inf
+	doing AB cut, depth: 2, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 2, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: 0, beta: inf
+	doing AB cut, depth: 2, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 2, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: 0, beta: inf
+	doing AB cut, depth: 2, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 2, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: 0, beta: inf
+	doing AB cut, depth: 2, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 2, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: 0, beta: inf
+	doing AB cut, depth: 2, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 2, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: 0, beta: inf
+	doing AB cut, depth: 2, ptm: 1, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 2, alpha: -inf, beta: -0
+in solve_with_timeout, depth = 3, alpha: 0, beta: inf
+	doing AB cut, depth: 2, ptm: 1, alpha: -inf, beta: -0
+Got: Loss
+Time (ms): 1.13
+Status: COMPLETED
