@@ -19,8 +19,11 @@
 #include <ostream>
 #include <cassert>
 
+bool score_is_win(int score);
+
 struct ttable_sumgame_entry
 {
+    int score;
 };
 
 typedef ttable<ttable_sumgame_entry> ttable_sumgame;
@@ -75,8 +78,7 @@ struct solve_result
 
     solve_result() = delete;
 
-    solve_result(bool win) : value(int(win)) {}
-    solve_result(int value) : value(value) {}
+    solve_result(int score) : score(score) {}
 
     // return this on timeout
     inline static std::optional<solve_result> invalid()
@@ -84,7 +86,7 @@ struct solve_result
         return std::optional<solve_result>();
     }
 
-    int value;
+    int score;
 };
 
 //////////////////////////////////////// sumgame
@@ -274,8 +276,8 @@ inline void sumgame::reset_ttable()
     }
 
     const size_t index_bits = _tt->n_index_bits();
-    const size_t entry_vals = _tt->n_entry_vals();
-    _tt.reset(new ttable_sumgame(index_bits, entry_vals));
+    const size_t entry_bools = _tt->n_entry_bools();
+    _tt.reset(new ttable_sumgame(index_bits, entry_bools));
 }
 
 //---------------------------------------------------------------------------

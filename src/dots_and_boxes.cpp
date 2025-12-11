@@ -448,9 +448,9 @@ dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game
 
     _assert_valid_state();
 
-    std::cout << "pretty-printing...\n" << pretty_print() << std::endl;
+    // std::cout << "pretty-printing...\n" << pretty_print() << std::endl;
 
-    std::cout << "shape: " << _shape.first << ", " << _shape.second << std::endl;
+    // std::cout << "shape: " << _shape.first << ", " << _shape.second << std::endl;
 }
 
 move_generator* dots_and_boxes::create_move_generator(bw to_play) const
