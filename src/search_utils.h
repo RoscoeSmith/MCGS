@@ -18,6 +18,7 @@ enum search_value_type_t
     SEARCH_VALUE_TYPE_NONE = 0, // i.e. timeout
     SEARCH_VALUE_TYPE_WINLOSS,
     SEARCH_VALUE_TYPE_NIMBER,
+    SEARCH_VALUE_TYPE_SCORE
 };
 
 class search_value
@@ -35,17 +36,20 @@ public:
     // value getters (must check type() first)
     bool win() const;
     int nimber() const;
+    int score() const;
 
     // setters
     void set_none();
     void set_win(bool new_win);
     void set_nimber(int new_nimber);
+    void set_score(int new_score);
 
 private:
     search_value_type_t _type;
 
     bool _value_win;
     int _value_nimber;
+    int _value_score;
 };
 
 ////////////////////////////////////////////////// test_status_t

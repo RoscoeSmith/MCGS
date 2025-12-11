@@ -50,7 +50,7 @@ string player_name_bw_imp(ebw to_play)
 
 ////////////////////////////////////////////////// search_value
 search_value::search_value()
-    : _type(SEARCH_VALUE_TYPE_NONE), _value_win(false), _value_nimber(-1)
+    : _type(SEARCH_VALUE_TYPE_NONE), _value_win(false), _value_nimber(-1), _value_score(-1)
 {
 }
 
@@ -67,6 +67,8 @@ bool search_value::operator==(const search_value& rhs) const
             return win() == rhs.win();
         case SEARCH_VALUE_TYPE_NIMBER:
             return nimber() == rhs.nimber();
+        case SEARCH_VALUE_TYPE_SCORE:
+            return score() == rhs.score();
     }
 
     assert(false);
@@ -90,6 +92,8 @@ string search_value::str() const
             assert(_value_nimber >= 0);
             return "*" + to_string(_value_nimber);
         }
+        case SEARCH_VALUE_TYPE_SCORE:
+            return to_string(_value_score);
     }
 
     THROW_ASSERT(false);
@@ -113,6 +117,13 @@ int search_value::nimber() const
     return _value_nimber;
 }
 
+int search_value::score() const
+{
+    THROW_ASSERT(type() == SEARCH_VALUE_TYPE_SCORE);
+    // assert(_value_score >= -1);  // is this correct?
+    return _value_score;
+}
+
 void search_value::set_none()
 {
     _type = SEARCH_VALUE_TYPE_NONE;
@@ -131,6 +142,14 @@ void search_value::set_nimber(int new_nimber)
 
     _type = SEARCH_VALUE_TYPE_NIMBER;
     _value_nimber = new_nimber;
+}
+
+void search_value::set_score(int new_score)
+{
+    // assert(new_score >= -1);
+
+    _type = SEARCH_VALUE_TYPE_SCORE;
+    _value_score = new_score;
 }
 
 ////////////////////////////////////////////////// test_status_t
@@ -198,7 +217,10 @@ search_result search_partizan(const sumgame& sum,
     result.player = sum.to_play();
 
     if (sr.has_value())
-        result.value.set_win(score_is_win(sr->score));
+        if (USE_AB_SEARCH)
+            result.value.set_score(sr->score);
+        else
+            result.value.set_win(score_is_win(sr->score));
     else
         result.value.set_none();
 
