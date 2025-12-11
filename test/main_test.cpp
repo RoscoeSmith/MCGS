@@ -145,10 +145,11 @@ int main(int argc, const char** argv)
     normalize_test_all();
     split_test_all();
 
+
     if (do_slow_tests)
     {
         clobber_1xn_test_all();
-        clobber_test_all();
+        clobber_test_all();    
         dots_and_boxes_test_all();
         nogo_1xn_test_all();
         nogo_test_all();
