@@ -426,14 +426,21 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth, float alpha,
 
     if (tt_result.has_value() && tt_result->entry_valid())
     {
-        // int tt_score = tt_result->get_entry().score;
-        // if (toplay == WHITE)
-        //     tt_score = -tt_score;
         // std::cout << "TT hit, value = " << tt_result->get_entry().score << "for ptm = " << toplay << std::endl;
         // cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << endl;
         // std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n - - - - - - - - - -\n" << dynamic_cast<dots_and_boxes*>(_subgames.at(1))->pretty_print() << "\n---------------------\n" << std::endl;
-        return tt_result->get_entry().score;
-        // return tt_result->get_bool(0);
+        if (tt_result->get_bool(0))  // if score is exact
+        {
+            return tt_result->get_entry().score;
+        }
+        else
+        {
+            // we can maybe do something with the alpha/beta values here
+            if (static_cast<float>(tt_result->get_entry().score) >= beta)
+            {
+                return tt_result->get_entry().score;
+            }
+        }
     }
 
 
@@ -482,20 +489,21 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth, float alpha,
             if (static_cast<float>(result.score) >= beta)
             {
                 
-                // if (tt_result.has_value())
-                // {
-                //     cout << "\tdoing AB cut, depth: " << depth << ", ptm: " << toplay << ", alpha: " << alpha << ", beta: " << beta << endl;
-                //     // int tt_score = result.score;
-                //     // if (toplay == WHITE)
-                //     //     tt_score = -tt_score;
-                //     tt_result->init_entry();
-                //     // tt_result->set_bool(0, result.win);
-                //     // cout << "before setting TT entry: " << tt_result->get_entry().score << endl;
-                //     // cout << "\tchanging value to: " << result.score << endl;
-                //     // tt_result->get_entry().score = tt_score;
-                //     tt_result->get_entry().score = result.score;
-                //     // cout << "after setting TT entry: " << tt_result->get_entry().score << endl;
-                // }
+                if (tt_result.has_value())
+                {
+                    cout << "\tdoing AB cut, depth: " << depth << ", ptm: " << toplay << ", alpha: " << alpha << ", beta: " << beta << endl;
+                    // int tt_score = result.score;
+                    // if (toplay == WHITE)
+                    //     tt_score = -tt_score;
+                    tt_result->init_entry();
+                    // tt_result->set_bool(0, result.win);
+                    // cout << "before setting TT entry: " << tt_result->get_entry().score << endl;
+                    // cout << "\tchanging value to: " << result.score << endl;
+                    // tt_result->get_entry().score = tt_score;
+                    tt_result->get_entry().score = result.score;
+                    tt_result->set_bool(0, false);
+                    // cout << "after setting TT entry: " << tt_result->get_entry().score << endl;
+                }
                 
                 result.score = static_cast<int>(beta);
 
@@ -535,6 +543,7 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth, float alpha,
         // tt_result->set_bool(0, sum_score);
         // tt_result->get_entry().score = tt_score;
         tt_result->get_entry().score = result.score;
+        tt_result->set_bool(0, true);
     }
 
     return result;
