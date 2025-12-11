@@ -50,10 +50,6 @@ using sumgame_impl::change_record;
 
 std::shared_ptr<ttable_sumgame> sumgame::_tt(nullptr);
 
-const int NP_WIN_SCORE = 1;
-const bool USE_SCORING_RULES = true;
-const bool USE_AB_SEARCH = false;
-const bool DRAW_IS_WIN = false;
 
 //---------------------------------------------------------------------------
 
