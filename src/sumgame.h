@@ -19,8 +19,11 @@
 #include <ostream>
 #include <cassert>
 
+bool score_is_win(int score);
+
 struct ttable_sumgame_entry
 {
+    int score;
 };
 
 typedef ttable<ttable_sumgame_entry> ttable_sumgame;
@@ -75,7 +78,7 @@ struct solve_result
 
     solve_result() = delete;
 
-    solve_result(bool win) : win(win) {}
+    solve_result(int score) : score(score) {}
 
     // return this on timeout
     inline static std::optional<solve_result> invalid()
@@ -83,7 +86,7 @@ struct solve_result
         return std::optional<solve_result>();
     }
 
-    bool win;
+    int score;
 };
 
 //////////////////////////////////////// sumgame
@@ -151,6 +154,8 @@ private:
 
     bool _over_time() const;
     game* _pop_game();
+
+    int _terminal_value(bw to_play) const;
 
     // For root level call, depth should be 0. For recursive calls,
     // pass depth + 1

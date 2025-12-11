@@ -44,6 +44,7 @@ public:
 
     // Default just returns false, a specific game may override
     virtual bool find_static_winner(bool& success) const;
+    virtual bool find_static_winner(int& value) const;
     virtual void play(const move& m);
     virtual void play(const std::vector<move>& m);
     // virtual void play(const std::variant<move, std::vector<move>>& mv);
@@ -129,6 +130,11 @@ inline hash_t alternating_move_game::game_hash() const
 }
 
 inline bool alternating_move_game::find_static_winner(bool& success) const
+{
+    return false;
+}
+
+inline bool alternating_move_game::find_static_winner(int& value) const
 {
     return false;
 }

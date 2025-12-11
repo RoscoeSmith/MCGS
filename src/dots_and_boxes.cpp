@@ -1,4 +1,5 @@
 #include "dots_and_boxes.h"
+#include "cgt_basics.h"
 #include "game.h"
 #include "scoring_game.h"
 #include "cgt_move.h"
@@ -447,6 +448,9 @@ dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game
 
     _assert_valid_state();
 
+    // std::cout << "pretty-printing...\n" << pretty_print() << std::endl;
+
+    // std::cout << "shape: " << _shape.first << ", " << _shape.second << std::endl;
 }
 
 move_generator* dots_and_boxes::create_move_generator(bw to_play) const
@@ -476,9 +480,25 @@ game* dots_and_boxes::inverse() const
     assert(false);
 }
 
-int dots_and_boxes::count_score() const
+int dots_and_boxes::count_score(bw to_play) const
 {
-    return _left_score - _right_score;
+    int score = _left_score - _right_score;
+    if (to_play == WHITE)
+    {
+        score = -score;
+    }
+    return score;
+}
+
+bool dots_and_boxes::is_terminal() const {
+    for (auto& v : _boxes)
+    {
+        // if any box is uncaptured, game is not terminal
+        if (v == EMPTY)
+            return false;
+    }
+    // if all boxes are captured, game is terminal
+    return true;
 }
 
 const int dots_and_boxes::_get_total_moves() const

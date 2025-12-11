@@ -198,7 +198,7 @@ search_result search_partizan(const sumgame& sum,
     result.player = sum.to_play();
 
     if (sr.has_value())
-        result.value.set_win(sr->win);
+        result.value.set_win(score_is_win(sr->score));
     else
         result.value.set_none();
 
