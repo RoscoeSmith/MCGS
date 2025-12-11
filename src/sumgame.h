@@ -159,7 +159,7 @@ private:
 
     // For root level call, depth should be 0. For recursive calls,
     // pass depth + 1
-    std::optional<solve_result> _solve_with_timeout(uint64_t depth);
+    std::optional<solve_result> _solve_with_timeout(uint64_t depth, float alpha, float beta);
     void _push_undo_code(sumgame_undo_code code);
     void _pop_undo_code(sumgame_undo_code code);
 
