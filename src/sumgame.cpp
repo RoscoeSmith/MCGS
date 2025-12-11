@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <limits>
 #include <utility>
 #include <optional>
 #include <ctime>
@@ -51,7 +52,7 @@ std::shared_ptr<ttable_sumgame> sumgame::_tt(nullptr);
 
 const int NP_WIN_SCORE = 1;
 const bool USE_SCORING_RULES = true;
-const bool DRAW_IS_WIN = false;
+const bool DRAW_IS_WIN = true;
 
 //---------------------------------------------------------------------------
 
@@ -308,7 +309,7 @@ optional<solve_result> sumgame::solve_with_timeout(
 
     std::thread thr([&]() -> void
     {
-        optional<solve_result> result = sum._solve_with_timeout(0);
+        optional<solve_result> result = sum._solve_with_timeout(0, -std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
         promise.set_value(result);
     });
 
@@ -378,7 +379,7 @@ bool sumgame::solve_with_games(game* g) const
     return result;
 }
 
-optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
+optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth, float alpha, float beta)
 {
 #ifdef SUMGAME_DEBUG
     _debug_extra();
@@ -400,7 +401,7 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
         print(cout);
     }
 
-    // cout << "in solve_with_timeout, depth = " << depth << endl;
+    cout << "in solve_with_timeout, depth = " << depth << ", alpha: " << alpha << ", beta: " << beta << endl;
 
     {
         std::optional<solve_result> result = simplify_db();
@@ -413,6 +414,7 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
 
     simplify_basic();
 
+    const bw toplay = to_play();
     /*      NOTE:
        This is sort of a nested optional. If sumgame's ttable is disabled (i.e.
        it uses 0 index bits), then tt_result doesn't hold a search_result.
@@ -424,26 +426,29 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
 
     if (tt_result.has_value() && tt_result->entry_valid())
     {
-        // std::cout << "TT hit, value = " << tt_result->get_entry().score << std::endl;
-        // cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << endl;
+        // int tt_score = tt_result->get_entry().score;
+        // if (toplay == WHITE)
+        //     tt_score = -tt_score;
+        std::cout << "TT hit, value = " << tt_result->get_entry().score << "for ptm = " << toplay << std::endl;
+        cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << endl;
         // std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n - - - - - - - - - -\n" << dynamic_cast<dots_and_boxes*>(_subgames.at(1))->pretty_print() << "\n---------------------\n" << std::endl;
         return tt_result->get_entry().score;
         // return tt_result->get_bool(0);
     }
 
-    const bw toplay = to_play();
 
     std::unique_ptr<sumgame_move_generator> mgp(
         create_sum_move_generator(toplay));
 
     sumgame_move_generator& mg = *mgp;
-    std::vector<int> option_scores;
+    // std::vector<int> option_scores;
 
-    // std::cout << "ptm: " << toplay << std::endl;
-    // std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n---------------------\n" << std::endl;
+    std::cout << "ptm: " << toplay << std::endl;
+    std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n---------------------\n" << std::endl;
     // std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n - - - - - - - - - -\n" << dynamic_cast<dots_and_boxes*>(_subgames.at(1))->pretty_print() << "\n---------------------\n" << std::endl;
 
     int moves_seen = 0;
+    float ab_value = -std::numeric_limits<float>::infinity();
     for (; mg; ++mg)
     {
         moves_seen++;
@@ -456,7 +461,7 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
 
         if (!found)
         {
-            optional<solve_result> child_result = _solve_with_timeout(depth);
+            optional<solve_result> child_result = _solve_with_timeout(depth, -beta, -alpha);
 
             if (!child_result.has_value() || _over_time())
             {
@@ -471,18 +476,27 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
             cout << "!!! WARNING !!! this should never get called!" << endl;
         }
 
-        option_scores.push_back(result.score);
+        // option_scores.push_back(result.score);
+        ab_value = std::max(ab_value, static_cast<float>(result.score));
+        alpha = std::max(alpha, ab_value);
+        cout << "\tupdated, depth: " << depth << ", ptm: " << toplay << ", ab_value: " << ab_value << ", alpha: " << alpha << ", beta: " << beta << endl;
         
         undo_move();
 
-        if (result.score > 0)
+        if (alpha >= beta)
         {
+            result.score = static_cast<int>(ab_value);
             if (tt_result.has_value())
             {
+                cout << "\tdoing AB cut, depth: " << depth << ", ptm: " << toplay << ", alpha: " << alpha << ", beta: " << beta << endl;
+                // int tt_score = result.score;
+                // if (toplay == WHITE)
+                //     tt_score = -tt_score;
                 tt_result->init_entry();
                 // tt_result->set_bool(0, result.win);
                 // cout << "before setting TT entry: " << tt_result->get_entry().score << endl;
                 // cout << "\tchanging value to: " << result.score << endl;
+                // tt_result->get_entry().score = tt_score;
                 tt_result->get_entry().score = result.score;
                 // cout << "after setting TT entry: " << tt_result->get_entry().score << endl;
             }
@@ -491,23 +505,25 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
         }
     }
 
-    assert(option_scores.size() == moves_seen);
+    // assert(option_scores.size() == moves_seen);
 
     int sum_score = 0;
-    auto max_it = std::max_element(option_scores.begin(), option_scores.end());
-    if (max_it == option_scores.end())
+    // auto max_it = std::max_element(option_scores.begin(), option_scores.end());
+    // if (max_it == option_scores.end())
+    if (moves_seen == 0)
     {
         // no options for player to move, get the score of each subgame
         sum_score = _terminal_value(toplay);
-        // std::cout << "in terminal position, result for ptm (" << toplay << "): " << sum_score << std::endl;
-        // cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << endl;
+        std::cout << "in terminal position, result for ptm (" << toplay << "): " << sum_score << std::endl;
+        cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << endl;
     // std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n - - - - - - - - - -\n" << dynamic_cast<dots_and_boxes*>(_subgames.at(1))->pretty_print() << "\n---------------------\n" << std::endl;
     }
     else
     {
-        sum_score = *max_it;
-        // std::cout << "in end of subtree search, result for ptm (" << toplay << "): " << sum_score << std::endl;
-        // cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print();
+        // sum_score = *max_it;
+        sum_score = static_cast<int>(ab_value);
+        std::cout << "in end of subtree search, result for ptm (" << toplay << "): " << sum_score << std::endl;
+        cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print();
     // std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n - - - - - - - - - -\n" << dynamic_cast<dots_and_boxes*>(_subgames.at(1))->pretty_print();
         // cout << "option scores: [ ";
         // for (auto x : option_scores)
@@ -519,8 +535,12 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
     
     if (tt_result.has_value())
     {
+        // int tt_score = sum_score;
+        // if (toplay == WHITE)
+        //     tt_score = -tt_score;
         tt_result->init_entry();
         // tt_result->set_bool(0, sum_score);
+        // tt_result->get_entry().score = tt_score;
         tt_result->get_entry().score = sum_score;
     }
 
@@ -778,9 +798,9 @@ void sumgame::undo_move()
             const move subm = cgt_move::decode(mv.at(i));
 
             assert(                                                         //
-                m == subm ||                                             //
+                m == subm ||                                                //
                 (                                                           //
-                    (cgt_move::decode(m) == subm) &&                     //
+                    (cgt_move::decode(m) == subm) &&                        //
                     (s->game_type() == game_type<impartial_game_wrapper>()) //
                     )                                                       //
             );                                                              //
@@ -870,7 +890,7 @@ int sumgame::_terminal_value(bw to_play) const {
     else
     {
         // under normal play, all subgames have no legal moves
-        return 0;
+        return -1;
     }
 }
 
