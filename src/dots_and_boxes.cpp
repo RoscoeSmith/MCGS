@@ -29,9 +29,9 @@ const int LINE_SEP = 3;
 const int DIM_SEP = 4;
 
 // gets the no. of possible edge move for a given board shape
-const int get_total_moves(const int& rows, const int& cols)
+const inline int get_total_moves(const int& rows, const int& cols)
 {
-    return rows * (cols + 1) + cols * (rows + 1);
+    return (rows * (cols + 1)) + (cols * (rows + 1));
 }
 
 void check_is_valid_char(char c)
@@ -409,7 +409,7 @@ dots_and_boxes::dots_and_boxes(int n_rows, int n_cols) : scoring_game()
     
     _vertical = std::vector<bool>(n_rows * (n_cols + 1), false);
     _horizontal = std::vector<bool>(n_cols * (n_rows + 1), false);
-    _boxes = std::vector<int>(n_rows * n_cols, 0);
+    _boxes = std::vector<int>(n_rows * n_cols, EMPTY);
 
     _left_score = 0;
     _right_score = 0;
@@ -447,9 +447,6 @@ dots_and_boxes::dots_and_boxes(const std::string& game_as_string) : scoring_game
 
     _assert_valid_state();
 
-    std::cout << "pretty-printing...\n" << pretty_print() << std::endl;
-
-    std::cout << "shape: " << _shape.first << ", " << _shape.second << std::endl;
 }
 
 move_generator* dots_and_boxes::create_move_generator(bw to_play) const
@@ -499,21 +496,12 @@ const int_pair dots_and_boxes::get_shape() const
 void dots_and_boxes::undo_move()
 {
 
-    // std::cout << "in undo start " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n" << std::endl;
-
     std::vector<::move> moves = last_multimove();
-
-    // for(const auto& a : moves)
-    // {
-    //     std::cout << (a & (MOVE_LIMIT - 1)) << " " << ((a >> 28) & 3) << std::endl;
-    // }
 
     for(::move m : moves)
     {
         undo_move_single();
     }
-
-    // std::cout << "in undo end " << _left_score << " " << _right_score << "\n" << this->pretty_print() << "\n\n" << std::endl;
 
 }
 
@@ -527,26 +515,17 @@ void dots_and_boxes::_init_hash(local_hash& hash) const
 
     for(bool a : _vertical)
     {
-        if(a)
-            hash.toggle_value(num_hashes, static_cast<int>(a));
-        
-        num_hashes ++;
+        hash.toggle_value(num_hashes++, static_cast<int>(a));
     }
 
     for(bool a : _horizontal)
     {
-        if(a)
-            hash.toggle_value(num_hashes, static_cast<int>(a));
-
-        num_hashes ++;
+        hash.toggle_value(num_hashes++, static_cast<int>(a));
     }
 
     for(int a : _boxes)
     {
-        if(a != EMPTY)
-            hash.toggle_value(num_hashes, a);
-
-        num_hashes ++;
+        hash.toggle_value(num_hashes++, a);
     }
     
 }
@@ -557,7 +536,7 @@ void dots_and_boxes::play(const move& m, bw to_play)
     game::play(m, to_play);
 
     unsigned int pos = m & (MOVE_LIMIT - 1);
-    int num_captures = (m >> 28) & 3;
+    int num_captures = (m >> 28) & 3, cap1 = -1, cap2 = -1;
 
     if(pos < _vertical.size())
     {
@@ -567,10 +546,16 @@ void dots_and_boxes::play(const move& m, bw to_play)
         if(num_captures != 0)
         {
             if(pos % (_shape.second + 1) > 0 && _left_capture(pos)) // not on the left side of the board, can check box to the left
-                _boxes.at(pos - pos/(_shape.second + 1) - 1) = to_play;
+            {
+                cap1 = pos - (pos/(_shape.second + 1)) - 1;
+                _boxes.at(cap1) = to_play;
+            }
 
             if(pos % (_shape.second + 1) < static_cast<unsigned int>(_shape.second) && _right_capture(pos)) // not on the right side of the board, can check the box to the right
-                _boxes.at(pos - pos/(_shape.second + 1)) = to_play;
+            {
+                cap2 = pos - (pos/(_shape.second + 1));
+                _boxes.at(cap2) = to_play;
+            }
         }
     }
     else
@@ -581,10 +566,16 @@ void dots_and_boxes::play(const move& m, bw to_play)
         if(num_captures != 0)
         {
             if((pos - _vertical.size()) >= static_cast<unsigned int>(_shape.second) && _up_capture(pos)) // not on the top side of the board, can check the box above
-                _boxes.at(pos - _vertical.size() - _shape.second) = to_play;
+            {
+                cap1 = pos - _vertical.size() - _shape.second;
+                _boxes.at(cap1) = to_play;
+            }
 
             if((pos - _vertical.size()) < static_cast<unsigned int>(_shape.first*_shape.second) && _down_capture(pos)) // not on the bottom of the board, can check box below
-                _boxes.at(pos - _vertical.size()) = to_play;
+            {
+                cap2 = pos - _vertical.size();
+                _boxes.at(cap2) = to_play;
+            }
         }
     }
 
@@ -597,6 +588,29 @@ void dots_and_boxes::play(const move& m, bw to_play)
         _right_score += num_captures;
     }
 
+    // if (_hash_updatable())
+    // {
+    //     local_hash& hash = _get_hash_ref();
+
+    //     hash.toggle_value(2 + pos, static_cast<int>(false));
+    //     hash.toggle_value(2 + pos, static_cast<int>(true));
+
+    //     if(cap1 != -1)
+    //     {
+    //         hash.toggle_value(2 + _get_total_moves() + cap1, EMPTY);
+    //         hash.toggle_value(2 + _get_total_moves() + cap1, to_play);
+    //     }
+
+    //     if(cap2 != -1)
+    //     {
+    //         hash.toggle_value(2 + _get_total_moves() + cap2, EMPTY);
+    //         hash.toggle_value(2 + _get_total_moves() + cap2, to_play);
+    //     }
+
+
+    //     _mark_hash_updated();
+    // }
+
 }
 
 void dots_and_boxes::undo_move_single()
@@ -608,7 +622,7 @@ void dots_and_boxes::undo_move_single()
     bw to_play = cgt_move::get_color(m);
 
     unsigned int pos = m & (MOVE_LIMIT - 1);
-    int num_captures = (m >> 28) & 3;
+    int num_captures = (m >> 28) & 3, cap1 = -1, cap2 = -1;
 
 
     if(pos < _vertical.size())
@@ -619,10 +633,16 @@ void dots_and_boxes::undo_move_single()
         if(num_captures != 0)
         {
             if(pos % (_shape.second + 1) > 0) // not on the left side of the board
-                _boxes.at(pos - pos/(_shape.second + 1) - 1) = EMPTY;
+            {
+                cap1 = pos - pos/(_shape.second + 1) - 1;
+                _boxes.at(cap1) = EMPTY;
+            }
 
             if(pos % (_shape.second + 1) < static_cast<unsigned int>(_shape.second)) // not on the right side of the board
-                _boxes.at(pos - pos/(_shape.second + 1)) = EMPTY;
+            {
+                cap2 = pos - pos/(_shape.second + 1);
+                _boxes.at(cap2) = EMPTY;
+            }
         }
 
     }
@@ -634,10 +654,16 @@ void dots_and_boxes::undo_move_single()
         if(num_captures != 0)
         {
             if((pos - _vertical.size()) >= static_cast<unsigned int>(_shape.second)) // not on the top side of the board
-                _boxes.at(pos - _vertical.size() - _shape.second) = EMPTY;
+            {
+                cap1 = pos - _vertical.size() - _shape.second;
+                _boxes.at(cap1) = EMPTY;
+            }
 
             if((pos - _vertical.size()) < static_cast<unsigned int>(_shape.first*_shape.second)) // not on the bottom of the board, can check box below
-                _boxes.at(pos - _vertical.size()) = EMPTY;
+            {
+                cap2 = pos - _vertical.size();
+                _boxes.at(cap2) = EMPTY;
+            }
         }
 
     }
@@ -650,6 +676,28 @@ void dots_and_boxes::undo_move_single()
     {
         _right_score -= num_captures;
     }
+
+    // if (_hash_updatable())
+    // {
+    //     local_hash& hash = _get_hash_ref();
+
+    //     hash.toggle_value(2 + pos, static_cast<int>(true));
+    //     hash.toggle_value(2 + pos, static_cast<int>(false));
+
+    //     if(cap1 != -1)
+    //     {
+    //         hash.toggle_value(2 + _get_total_moves() + cap1, to_play);
+    //         hash.toggle_value(2 + _get_total_moves() + cap1, EMPTY);
+    //     }
+
+    //     if(cap2 != -1)
+    //     {
+    //         hash.toggle_value(2 + _get_total_moves() + cap2, to_play);
+    //         hash.toggle_value(2 + _get_total_moves() + cap2, EMPTY);
+    //     }
+
+    //     _mark_hash_updated();
+    // }
     
 }
 

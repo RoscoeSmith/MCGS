@@ -413,7 +413,6 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
 
     if (tt_result.has_value() && tt_result->entry_valid())
     {
-        std::cout << "TT hit!" << std::endl;
         return tt_result->get_bool(0);
     }
 
@@ -423,8 +422,6 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
         create_sum_move_generator(toplay));
 
     sumgame_move_generator& mg = *mgp;
-
-    std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n---------------------\n" << std::endl;
 
 
     for (; mg; ++mg)
@@ -459,29 +456,10 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
         }
     }
 
-    bool res;
 
-    if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() > 0 && toplay == BLACK)
-    {
-        res = true;
-    }
-    else if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() > 0 && toplay == WHITE)
-    {
-        res = false;
-    }
-    else if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() < 0 && toplay == BLACK)
-    {
-        res = false;
-    }
-    else if(dynamic_cast<scoring_game*>(_subgames.at(0))->count_score() < 0 && toplay == WHITE)
-    {
-        res = true;
-    }
-    else
-    {
-        res = true;
-    }
+    int score = dynamic_cast<scoring_game*>(_subgames.at(0))->count_score();
 
+    bool res = (score * (-1 * (toplay == WHITE))) > 0; // can change > to >= to change the tie result
     
 
     if (tt_result.has_value())

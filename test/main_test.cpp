@@ -28,6 +28,7 @@ const bool RUN_OVERRIDE_TESTS = false;
 #include "cgt_up_star_test.h"
 #include "clobber_test.h"
 #include "clobber_1xn_test.h"
+#include "dots_and_boxes_test.h"
 #include "impartial_game_wrapper_test.h"
 #include "impartial_minimax_test.h"
 #include "impartial_sumgame_test.h"
@@ -148,6 +149,7 @@ int main(int argc, const char** argv)
     {
         clobber_1xn_test_all();
         clobber_test_all();
+        dots_and_boxes_test_all();
         nogo_1xn_test_all();
         nogo_test_all();
         elephants_test_all(); // takes several seconds
