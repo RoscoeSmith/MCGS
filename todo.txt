@@ -1,0 +1,4 @@
+change TT entry to store score for left and right
+  position could have different values for each player, cannot treat them as additive inverse
+use bools to indicate which score has been set
+  the first time a state has been seen, we can only be sure it has been seen for one player, indicate that player has set their score with a bool
