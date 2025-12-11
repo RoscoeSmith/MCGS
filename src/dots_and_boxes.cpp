@@ -5,6 +5,8 @@
 #include "cgt_move.h"
 #include <unistd.h>
 
+#include <bitset>
+
 
 #include <vector>
 #include <ostream>
@@ -13,6 +15,8 @@
 #include <cassert>
 #include <cctype>
 #include <algorithm>
+
+using std::cout, std::endl;
 
 
 /*
@@ -553,6 +557,8 @@ void dots_and_boxes::_init_hash(local_hash& hash) const
 void dots_and_boxes::play(const move& m, bw to_play)
 {
 
+    // cout << pretty_print() << endl;
+
     game::play(m, to_play);
 
     unsigned int pos = m & (MOVE_LIMIT - 1);
@@ -610,7 +616,10 @@ void dots_and_boxes::play(const move& m, bw to_play)
 
     // if (_hash_updatable())
     // {
+
     //     local_hash& hash = _get_hash_ref();
+
+    //     cout << "in play\n" << std::bitset<64>(hash.get_value()) << endl;
 
     //     hash.toggle_value(2 + pos, static_cast<int>(false));
     //     hash.toggle_value(2 + pos, static_cast<int>(true));
@@ -627,6 +636,8 @@ void dots_and_boxes::play(const move& m, bw to_play)
     //         hash.toggle_value(2 + _get_total_moves() + cap2, to_play);
     //     }
 
+    //     cout << std::bitset<64>(hash.get_value()) << "\n" << endl;
+
 
     //     _mark_hash_updated();
     // }
@@ -635,6 +646,8 @@ void dots_and_boxes::play(const move& m, bw to_play)
 
 void dots_and_boxes::undo_move_single()
 {
+
+    // cout << pretty_print() << endl;
 
     ::move m = last_move();
     game::undo_move();
@@ -701,6 +714,8 @@ void dots_and_boxes::undo_move_single()
     // {
     //     local_hash& hash = _get_hash_ref();
 
+    //     cout << "in undo\n" << std::bitset<64>(hash.get_value()) << endl;
+
     //     hash.toggle_value(2 + pos, static_cast<int>(true));
     //     hash.toggle_value(2 + pos, static_cast<int>(false));
 
@@ -715,6 +730,8 @@ void dots_and_boxes::undo_move_single()
     //         hash.toggle_value(2 + _get_total_moves() + cap2, to_play);
     //         hash.toggle_value(2 + _get_total_moves() + cap2, EMPTY);
     //     }
+
+    //     cout << std::bitset<64>(hash.get_value()) << "\n" << endl;
 
     //     _mark_hash_updated();
     // }

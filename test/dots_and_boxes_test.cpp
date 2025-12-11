@@ -17,13 +17,13 @@ namespace
 void test_outcomes()
 {
     vector<tuple<string, bool, bool>> boards = { // results are assumed to be for the first player and draws are losses
-        {"@0,0", false, false},
-        {"@1,0", false, false},
-        {"@0,1", false, false},
         {"@1,1", false, false},
         {"@1,2", false, false},
         {"@2,1", false, false},
-        {"@2,2", true, true}
+        {"@2,2", true, true},
+        {"@3,2", false, false},
+        {"@2,3", false, false},
+        {"@3,3", true, true},
     };
 
     for(const auto& t : boards)
@@ -37,6 +37,7 @@ void test_outcomes()
     }
 
 }
+
 
 
 
