@@ -10,7 +10,7 @@
 #include "game.h"
 #include "scoring_game.h"
 
-// #include "dots_and_boxes.h"
+#include "dots_and_boxes.h"
 
 #include "cgt_dyadic_rational.h"
 #include "cgt_integer_game.h"
