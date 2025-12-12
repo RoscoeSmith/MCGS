@@ -5,9 +5,6 @@
 #include "cgt_move.h"
 #include <unistd.h>
 
-#include <bitset>
-
-
 #include <vector>
 #include <ostream>
 #include <string>
@@ -169,7 +166,7 @@ std::string board_to_string(const std::vector<bool>& horizontal,const std::vecto
     // add vertical lines
     for (int v = 0; v < n_rows * (n_cols + 1); v++)
     {
-        if (v != 0 && v % n_rows == 0)
+        if (v != 0 && v % (n_rows + 1) == 0)
         {
             result += color_to_char(LINE_SEP);
         }
