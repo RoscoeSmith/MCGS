@@ -4,6 +4,9 @@
 #include "game.h"
 #include "grid.h"
 
+#define MOVE_AREA 0x003FFFFF
+#define DIR_AREA  0x3FC00000
+
 using namespace std;
 
 
@@ -60,7 +63,8 @@ void othello::play(const ::move& m, bw to_play)
 {
     grid::play(m, to_play);
 
-    const int to = cgt_move::decode(m);
+    const int to = m & MOVE_AREA;
+    int dirs = m & DIR_AREA;
     assert(at(to) == EMPTY);
 
     replace(to, to_play);
@@ -74,234 +78,258 @@ void othello::play(const ::move& m, bw to_play)
     bool should_capture;
 
     // inc row
-    should_capture = false;
-    to_capture.clear();
-    for (int r = rc.first + 1; coord_in_bounds(int_pair(r, rc.second)); r++)
+    if (dirs & (1 << 0))
     {
-        int coord = coord_to_point(int_pair(r, rc.second));
-        if (at(coord) == opp)
+        should_capture = false;
+        to_capture.clear();
+        for (int r = rc.first + 1; coord_in_bounds(int_pair(r, rc.second)); r++)
         {
-            to_capture.push_back(coord);
-            continue;
+            int coord = coord_to_point(int_pair(r, rc.second));
+            if (at(coord) == opp)
+            {
+                to_capture.push_back(coord);
+                continue;
+            }
+            else if (at(coord) == to_play)
+            {
+                should_capture = true;
+                break;
+            }
+            else if (at(coord) == EMPTY)
+            {
+                break;
+            }
         }
-        else if (at(coord) == to_play)
+        if (should_capture and (not to_capture.empty()))
         {
-            should_capture = true;
-            break;
-        }
-        else if (at(coord) == EMPTY)
-        {
-            break;
-        }
-    }
-    if (should_capture and (not to_capture.empty()))
-    {
-        for (int& i : to_capture)
-        {
-            replace(i, to_play);
+            for (int& i : to_capture)
+            {
+                replace(i, to_play);
+            }
         }
     }
 
     // dec row
-    should_capture = false;
-    to_capture.clear();
-    for (int r = rc.first - 1; coord_in_bounds(int_pair(r, rc.second)); r--)
+    if (dirs & (1 << 1))
     {
-        int coord = coord_to_point(int_pair(r, rc.second));
-        if (at(coord) == opp)
+        should_capture = false;
+        to_capture.clear();
+        for (int r = rc.first - 1; coord_in_bounds(int_pair(r, rc.second)); r--)
         {
-            to_capture.push_back(coord);
-            continue;
+            int coord = coord_to_point(int_pair(r, rc.second));
+            if (at(coord) == opp)
+            {
+                to_capture.push_back(coord);
+                continue;
+            }
+            else if (at(coord) == to_play)
+            {
+                should_capture = true;
+                break;
+            }
+            else if (at(coord) == EMPTY)
+            {
+                break;
+            }
         }
-        else if (at(coord) == to_play)
+        if (should_capture and (not to_capture.empty()))
         {
-            should_capture = true;
-            break;
-        }
-        else if (at(coord) == EMPTY)
-        {
-            break;
-        }
-    }
-    if (should_capture and (not to_capture.empty()))
-    {
-        for (int& i : to_capture)
-        {
-            replace(i, to_play);
+            for (int& i : to_capture)
+            {
+                replace(i, to_play);
+            }
         }
     }
 
     // inc col
-    should_capture = false;
-    to_capture.clear();
-    for (int c = rc.second + 1; coord_in_bounds(int_pair(rc.first, c)); c++)
+    if (dirs & (1 << 2))
     {
-        int coord = coord_to_point(int_pair(rc.first, c));
-        if (at(coord) == opp)
+        should_capture = false;
+        to_capture.clear();
+        for (int c = rc.second + 1; coord_in_bounds(int_pair(rc.first, c)); c++)
         {
-            to_capture.push_back(coord);
-            continue;
+            int coord = coord_to_point(int_pair(rc.first, c));
+            if (at(coord) == opp)
+            {
+                to_capture.push_back(coord);
+                continue;
+            }
+            else if (at(coord) == to_play)
+            {
+                should_capture = true;
+                break;
+            }
+            else if (at(coord) == EMPTY)
+            {
+                break;
+            }
         }
-        else if (at(coord) == to_play)
+        if (should_capture and (not to_capture.empty()))
         {
-            should_capture = true;
-            break;
-        }
-        else if (at(coord) == EMPTY)
-        {
-            break;
-        }
-    }
-    if (should_capture and (not to_capture.empty()))
-    {
-        for (int& i : to_capture)
-        {
-            replace(i, to_play);
+            for (int& i : to_capture)
+            {
+                replace(i, to_play);
+            }
         }
     }
 
-    // dec row
-    should_capture = false;
-    to_capture.clear();
-    for (int c = rc.second - 1; coord_in_bounds(int_pair(rc.first, c)); c--)
+    // dec col
+    if (dirs & (1 << 3))
     {
-        int coord = coord_to_point(int_pair(rc.first, c));
-        if (at(coord) == opp)
+        should_capture = false;
+        to_capture.clear();
+        for (int c = rc.second - 1; coord_in_bounds(int_pair(rc.first, c)); c--)
         {
-            to_capture.push_back(coord);
-            continue;
+            int coord = coord_to_point(int_pair(rc.first, c));
+            if (at(coord) == opp)
+            {
+                to_capture.push_back(coord);
+                continue;
+            }
+            else if (at(coord) == to_play)
+            {
+                should_capture = true;
+                break;
+            }
+            else if (at(coord) == EMPTY)
+            {
+                break;
+            }
         }
-        else if (at(coord) == to_play)
+        if (should_capture and (not to_capture.empty()))
         {
-            should_capture = true;
-            break;
-        }
-        else if (at(coord) == EMPTY)
-        {
-            break;
-        }
-    }
-    if (should_capture and (not to_capture.empty()))
-    {
-        for (int& i : to_capture)
-        {
-            replace(i, to_play);
+            for (int& i : to_capture)
+            {
+                replace(i, to_play);
+            }
         }
     }
 
     // inc row and col
-    should_capture = false;
-    to_capture.clear();
-    for (int r = rc.first + 1, c = rc.second + 1; coord_in_bounds(int_pair(r, c)); r++, c++)
+    if (dirs & (1 << 4))
     {
-        int coord = coord_to_point(int_pair(r, rc.second));
-        if (at(coord) == opp)
+        should_capture = false;
+        to_capture.clear();
+        for (int r = rc.first + 1, c = rc.second + 1; coord_in_bounds(int_pair(r, c)); r++, c++)
         {
-            to_capture.push_back(coord);
-            continue;
+            int coord = coord_to_point(int_pair(r, rc.second));
+            if (at(coord) == opp)
+            {
+                to_capture.push_back(coord);
+                continue;
+            }
+            else if (at(coord) == to_play)
+            {
+                should_capture = true;
+                break;
+            }
+            else if (at(coord) == EMPTY)
+            {
+                break;
+            }
         }
-        else if (at(coord) == to_play)
+        if (should_capture and (not to_capture.empty()))
         {
-            should_capture = true;
-            break;
-        }
-        else if (at(coord) == EMPTY)
-        {
-            break;
-        }
-    }
-    if (should_capture and (not to_capture.empty()))
-    {
-        for (int& i : to_capture)
-        {
-            replace(i, to_play);
+            for (int& i : to_capture)
+            {
+                replace(i, to_play);
+            }
         }
     }
 
     // inc row, dec col
-    should_capture = false;
-    to_capture.clear();
-    for (int r = rc.first + 1, c = rc.second - 1; coord_in_bounds(int_pair(r, c)); r++, c--)
+    if (dirs & (1 << 5))
     {
-        int coord = coord_to_point(int_pair(r, rc.second));
-        if (at(coord) == opp)
+        should_capture = false;
+        to_capture.clear();
+        for (int r = rc.first + 1, c = rc.second - 1; coord_in_bounds(int_pair(r, c)); r++, c--)
         {
-            to_capture.push_back(coord);
-            continue;
+            int coord = coord_to_point(int_pair(r, rc.second));
+            if (at(coord) == opp)
+            {
+                to_capture.push_back(coord);
+                continue;
+            }
+            else if (at(coord) == to_play)
+            {
+                should_capture = true;
+                break;
+            }
+            else if (at(coord) == EMPTY)
+            {
+                break;
+            }
         }
-        else if (at(coord) == to_play)
+        if (should_capture and (not to_capture.empty()))
         {
-            should_capture = true;
-            break;
-        }
-        else if (at(coord) == EMPTY)
-        {
-            break;
-        }
-    }
-    if (should_capture and (not to_capture.empty()))
-    {
-        for (int& i : to_capture)
-        {
-            replace(i, to_play);
+            for (int& i : to_capture)
+            {
+                replace(i, to_play);
+            }
         }
     }
 
     // dec row, inc col
-    should_capture = false;
-    to_capture.clear();
-    for (int r = rc.first - 1, c = rc.second + 1; coord_in_bounds(int_pair(r, c)); r--, c++)
+    if (dirs & (1 << 6))
     {
-        int coord = coord_to_point(int_pair(r, rc.second));
-        if (at(coord) == opp)
+        should_capture = false;
+        to_capture.clear();
+        for (int r = rc.first - 1, c = rc.second + 1; coord_in_bounds(int_pair(r, c)); r--, c++)
         {
-            to_capture.push_back(coord);
-            continue;
+            int coord = coord_to_point(int_pair(r, rc.second));
+            if (at(coord) == opp)
+            {
+                to_capture.push_back(coord);
+                continue;
+            }
+            else if (at(coord) == to_play)
+            {
+                should_capture = true;
+                break;
+            }
+            else if (at(coord) == EMPTY)
+            {
+                break;
+            }
         }
-        else if (at(coord) == to_play)
+        if (should_capture and (not to_capture.empty()))
         {
-            should_capture = true;
-            break;
-        }
-        else if (at(coord) == EMPTY)
-        {
-            break;
-        }
-    }
-    if (should_capture and (not to_capture.empty()))
-    {
-        for (int& i : to_capture)
-        {
-            replace(i, to_play);
+            for (int& i : to_capture)
+            {
+                replace(i, to_play);
+            }
         }
     }
 
     // dec row and col
-    should_capture = false;
-    to_capture.clear();
-    for (int r = rc.first - 1, c = rc.second - 1; coord_in_bounds(int_pair(r, c)); r--, c--)
+    if (dirs & (1 << 7))
     {
-        int coord = coord_to_point(int_pair(r, rc.second));
-        if (at(coord) == opp)
+        should_capture = false;
+        to_capture.clear();
+        for (int r = rc.first - 1, c = rc.second - 1; coord_in_bounds(int_pair(r, c)); r--, c--)
         {
-            to_capture.push_back(coord);
-            continue;
+            int coord = coord_to_point(int_pair(r, rc.second));
+            if (at(coord) == opp)
+            {
+                to_capture.push_back(coord);
+                continue;
+            }
+            else if (at(coord) == to_play)
+            {
+                should_capture = true;
+                break;
+            }
+            else if (at(coord) == EMPTY)
+            {
+                break;
+            }
         }
-        else if (at(coord) == to_play)
+        if (should_capture and (not to_capture.empty()))
         {
-            should_capture = true;
-            break;
-        }
-        else if (at(coord) == EMPTY)
-        {
-            break;
-        }
-    }
-    if (should_capture and (not to_capture.empty()))
-    {
-        for (int& i : to_capture)
-        {
-            replace(i, to_play);
+            for (int& i : to_capture)
+            {
+                replace(i, to_play);
+            }
         }
     }
 }
