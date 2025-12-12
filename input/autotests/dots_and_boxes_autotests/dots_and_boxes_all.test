@@ -15,3 +15,7 @@
 
 @3,2 {B loss, W loss}
 @2,3 {B loss, W loss}
+
+@4,2 {B win, W win}
+@2,4 {B win, W win}
+
