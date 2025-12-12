@@ -212,7 +212,7 @@ void othello::play(const ::move& m, bw to_play)
         to_capture.clear();
         for (int r = rc.first + 1, c = rc.second + 1; coord_in_bounds(int_pair(r, c)); r++, c++)
         {
-            int coord = coord_to_point(int_pair(r, rc.second));
+            int coord = coord_to_point(int_pair(r, c));
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
@@ -244,7 +244,7 @@ void othello::play(const ::move& m, bw to_play)
         to_capture.clear();
         for (int r = rc.first + 1, c = rc.second - 1; coord_in_bounds(int_pair(r, c)); r++, c--)
         {
-            int coord = coord_to_point(int_pair(r, rc.second));
+            int coord = coord_to_point(int_pair(r, c));
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
@@ -276,7 +276,7 @@ void othello::play(const ::move& m, bw to_play)
         to_capture.clear();
         for (int r = rc.first - 1, c = rc.second + 1; coord_in_bounds(int_pair(r, c)); r--, c++)
         {
-            int coord = coord_to_point(int_pair(r, rc.second));
+            int coord = coord_to_point(int_pair(r, c));
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
@@ -308,7 +308,7 @@ void othello::play(const ::move& m, bw to_play)
         to_capture.clear();
         for (int r = rc.first - 1, c = rc.second - 1; coord_in_bounds(int_pair(r, c)); r--, c--)
         {
-            int coord = coord_to_point(int_pair(r, rc.second));
+            int coord = coord_to_point(int_pair(r, c));
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
@@ -339,10 +339,144 @@ void othello::undo_move()
     const ::move mc = grid::last_move();
     grid::undo_move();
 
-    const int to = cgt_move::decode(mc);
+    const int to = mc & MOVE_AREA;
+    int dirs = mc & DIR_AREA;
+    
     const bw player = cgt_move::get_color(mc);
+    const bw opp = opponent(player);
     assert(at(to) == player);
-    const int N = size();
+
+    // raycast
+    int_pair rc = point_to_coord(mc);
+    int_pair grid_shape = shape();
+
+    // inc row
+    if (dirs & (1 << 0))
+    {
+        for (int r = rc.first + 2; coord_in_bounds(int_pair(r, rc.second)); r++)
+        {
+            if (at(coord_to_point(int_pair(r, rc.second))) != player)
+            {
+                break;
+            }
+            else
+            {
+                replace(coord_to_point(int_pair(r - 1, rc.second)), opp);
+            }
+        }
+    }
+
+    // dec row
+    if (dirs & (1 << 0))
+    {
+        for (int r = rc.first - 2; coord_in_bounds(int_pair(r, rc.second)); r--)
+        {
+            if (at(coord_to_point(int_pair(r, rc.second))) != player)
+            {
+                break;
+            }
+            else
+            {
+                replace(coord_to_point(int_pair(r + 1, rc.second)), opp);
+            }
+        }
+    }
+
+    // inc col
+    if (dirs & (1 << 0))
+    {
+        for (int c = rc.second + 2; coord_in_bounds(int_pair(rc.first, c)); c++)
+        {
+            if (at(coord_to_point(int_pair(rc.first, c))) != player)
+            {
+                break;
+            }
+            else
+            {
+                replace(coord_to_point(int_pair(rc.first, c - 1)), opp);
+            }
+        }
+    }
+
+    // dec col
+    if (dirs & (1 << 0))
+    {
+        for (int c = rc.second - 2; coord_in_bounds(int_pair(rc.first, c)); c--)
+        {
+            if (at(coord_to_point(int_pair(rc.first, c))) != player)
+            {
+                break;
+            }
+            else
+            {
+                replace(coord_to_point(int_pair(rc.first, c + 1)), opp);
+            }
+        }
+    }
+
+    // inc row and col
+    if (dirs & (1 << 0))
+    {
+        for (int r = rc.first + 2, c = rc.second + 2; coord_in_bounds(int_pair(r, c)); r++, c++)
+        {
+            if (at(coord_to_point(int_pair(r, c))) != player)
+            {
+                break;
+            }
+            else
+            {
+                replace(coord_to_point(int_pair(r - 1, c - 1)), opp);
+            }
+        }
+    }
+
+    // inc row, dec col
+    if (dirs & (1 << 0))
+    {
+        for (int r = rc.first + 2, c = rc.second - 2; coord_in_bounds(int_pair(r, c)); r++, c--)
+        {
+            if (at(coord_to_point(int_pair(r, c))) != player)
+            {
+                break;
+            }
+            else
+            {
+                replace(coord_to_point(int_pair(r - 1, c + 1)), opp);
+            }
+        }
+    }
+
+    // dec row, inc col
+    if (dirs & (1 << 0))
+    {
+        for (int r = rc.first - 2, c = rc.second + 2; coord_in_bounds(int_pair(r, c)); r--, c++)
+        {
+            if (at(coord_to_point(int_pair(r, c))) != player)
+            {
+                break;
+            }
+            else
+            {
+                replace(coord_to_point(int_pair(r + 1, c - 1)), opp);
+            }
+        }
+    }
+
+    // dec row and col
+    if (dirs & (1 << 0))
+    {
+        for (int r = rc.first - 2, c = rc.second - 2; coord_in_bounds(int_pair(r, c)); r--, c--)
+        {
+            if (at(coord_to_point(int_pair(r, c))) != player)
+            {
+                break;
+            }
+            else
+            {
+                replace(coord_to_point(int_pair(r + 1, c + 1)), opp);
+            }
+        }
+    }
 
     replace(to, EMPTY);
     
