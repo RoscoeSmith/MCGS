@@ -22,7 +22,7 @@
 bool score_is_win(int score);
 
 const int NP_WIN_SCORE = 1;
-const bool USE_AB_SEARCH = false;
+const bool USE_AB_SEARCH = true;
 const bool USE_SCORING_RULES = true;
 const bool DRAW_IS_WIN = false;
 

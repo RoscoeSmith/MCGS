@@ -396,10 +396,17 @@ void othello::play(const ::move& m, bw to_play)
 {
     grid::play(m, to_play);
 
-    print(cout);
+    cout << grid::board_as_string() << endl;
 
     const int to = m & MOVE_AREA;
     int dirs = m & DIR_AREA;
+
+    if (dirs == 0)
+    {
+        cout << to_play << " passes" << endl;
+        return;
+    }
+    
     assert(at(to) == EMPTY);
 
     replace(to, to_play);
@@ -422,7 +429,7 @@ void othello::play(const ::move& m, bw to_play)
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
-                continue;
+                // continue;
             }
             else if (at(coord) == to_play)
             {
@@ -434,7 +441,7 @@ void othello::play(const ::move& m, bw to_play)
                 break;
             }
         }
-        if (should_capture and (not to_capture.empty()))
+        if (should_capture and (!to_capture.empty()))
         {
             for (int& i : to_capture)
             {
@@ -454,7 +461,7 @@ void othello::play(const ::move& m, bw to_play)
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
-                continue;
+                // continue;
             }
             else if (at(coord) == to_play)
             {
@@ -466,7 +473,7 @@ void othello::play(const ::move& m, bw to_play)
                 break;
             }
         }
-        if (should_capture and (not to_capture.empty()))
+        if (should_capture and (!to_capture.empty()))
         {
             for (int& i : to_capture)
             {
@@ -486,7 +493,7 @@ void othello::play(const ::move& m, bw to_play)
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
-                continue;
+                // continue;
             }
             else if (at(coord) == to_play)
             {
@@ -498,7 +505,7 @@ void othello::play(const ::move& m, bw to_play)
                 break;
             }
         }
-        if (should_capture and (not to_capture.empty()))
+        if (should_capture and (!to_capture.empty()))
         {
             for (int& i : to_capture)
             {
@@ -518,7 +525,7 @@ void othello::play(const ::move& m, bw to_play)
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
-                continue;
+                // continue;
             }
             else if (at(coord) == to_play)
             {
@@ -530,7 +537,7 @@ void othello::play(const ::move& m, bw to_play)
                 break;
             }
         }
-        if (should_capture and (not to_capture.empty()))
+        if (should_capture and (!to_capture.empty()))
         {
             for (int& i : to_capture)
             {
@@ -550,7 +557,7 @@ void othello::play(const ::move& m, bw to_play)
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
-                continue;
+                // continue;
             }
             else if (at(coord) == to_play)
             {
@@ -562,7 +569,7 @@ void othello::play(const ::move& m, bw to_play)
                 break;
             }
         }
-        if (should_capture and (not to_capture.empty()))
+        if (should_capture and (!to_capture.empty()))
         {
             for (int& i : to_capture)
             {
@@ -582,7 +589,7 @@ void othello::play(const ::move& m, bw to_play)
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
-                continue;
+                // continue;
             }
             else if (at(coord) == to_play)
             {
@@ -594,7 +601,7 @@ void othello::play(const ::move& m, bw to_play)
                 break;
             }
         }
-        if (should_capture and (not to_capture.empty()))
+        if (should_capture and (!to_capture.empty()))
         {
             for (int& i : to_capture)
             {
@@ -614,7 +621,7 @@ void othello::play(const ::move& m, bw to_play)
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
-                continue;
+                // continue;
             }
             else if (at(coord) == to_play)
             {
@@ -626,7 +633,7 @@ void othello::play(const ::move& m, bw to_play)
                 break;
             }
         }
-        if (should_capture and (not to_capture.empty()))
+        if (should_capture and (!to_capture.empty()))
         {
             for (int& i : to_capture)
             {
@@ -646,7 +653,7 @@ void othello::play(const ::move& m, bw to_play)
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
-                continue;
+                // continue;
             }
             else if (at(coord) == to_play)
             {
@@ -658,7 +665,7 @@ void othello::play(const ::move& m, bw to_play)
                 break;
             }
         }
-        if (should_capture and (not to_capture.empty()))
+        if (should_capture and (!to_capture.empty()))
         {
             for (int& i : to_capture)
             {
@@ -675,6 +682,11 @@ void othello::undo_move()
 
     const int to = mc & MOVE_AREA;
     int dirs = mc & DIR_AREA;
+
+    if (dirs == 0)
+    {
+        return;
+    }
     
     const bw player = cgt_move::get_color(mc);
     const bw opp = opponent(player);
