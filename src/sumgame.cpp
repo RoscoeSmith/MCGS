@@ -450,7 +450,7 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
     // std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n---------------------\n" << std::endl;
     // std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n - - - - - - - - - -\n" << dynamic_cast<dots_and_boxes*>(_subgames.at(1))->pretty_print() << "\n---------------------\n" << std::endl;
     
-    solve_result result(-1000000);
+    solve_result result(std::numeric_limits<int>::min());
 
     if(mg)
     {
@@ -482,7 +482,7 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
             
             undo_move();
 
-            if (result.score > 0)
+            if (score_is_win(result.score))
             {
                 if (tt_result.has_value())
                 {
