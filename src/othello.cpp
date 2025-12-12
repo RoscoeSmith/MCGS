@@ -101,6 +101,9 @@ void othello_move_generator::_next_move(bool init)
     _north_east = false;
     _north_west = false;
 
+    if(_game.is_terminal())
+        return;
+
 
     _current ++;
 
