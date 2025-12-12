@@ -3,6 +3,7 @@
 #include "cgt_move.h"
 #include "game.h"
 #include "grid.h"
+#include <vector>
 
 #define MOVE_AREA 0x003FFFFF
 #define DIR_AREA  0x3FC00000
@@ -57,6 +58,42 @@ othello::othello(const vector<int>& board, int_pair shape) : grid(board, shape)
 
 othello::othello(const string& game_as_string) : grid(game_as_string)
 {
+}
+
+int othello::count_score(bw to_play) const
+{
+    int black_score = 0;
+    int white_score = 0;
+
+    for (int& v : board())
+    {
+        switch (v)
+        {
+            case BLACK:
+                ++black_score;
+                break;
+            case WHITE:
+                ++white_score;
+                break;
+        }
+    }
+
+    int score = black_score - white_score;
+    if (to_play == WHITE)
+    {
+        score = -score;
+    }
+    return score;
+}
+
+bool othello::is_terminal() const
+{
+    const std::vector<::move> move_stack = grid::get_move_stack();
+    if (move_stack.size() < 2)
+        return false;
+    if ((move_stack.at(move_stack.size() - 1) & 0x3FFFFFFF) == 0 and (move_stack.at(move_stack.size() - 2) & 0x3FFFFFFF) == 0)
+        return true;
+    return false;
 }
 
 void othello::play(const ::move& m, bw to_play)
