@@ -17,7 +17,7 @@
 // (row, col)
 typedef std::pair<int, int> int_pair;
 
-class grid : public game
+class grid : public virtual game
 {
 public:
     grid(int n_rows, int n_cols);

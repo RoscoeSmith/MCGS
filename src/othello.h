@@ -19,7 +19,7 @@ public:
 
     move_generator* create_move_generator(bw to_play) const override;
 
-    void print(std::ostream& str) const override { grid::print(str); }
+    void print(std::ostream& str) const override { str << grid::board_as_string(); }
     game* inverse() const override { assert(false); }
     void _init_hash(local_hash& hash) const override { grid::_init_hash(hash); }
     

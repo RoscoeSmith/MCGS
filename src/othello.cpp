@@ -64,7 +64,7 @@ othello_move_generator::operator bool() const
 
 ::move othello_move_generator::gen_move() const
 {
-    assert(*this)
+    assert(*this);
 
     ::move oth_move = 0;
 
@@ -110,8 +110,8 @@ void othello_move_generator::_next_move(bool init)
 
     int_pair rc;
 
-    bw to_play = to_play();
-    bw opp = opponent(to_play);
+    bw toplay = to_play();
+    bw opp = opponent();
 
 
     bool should_capture = false;
@@ -126,22 +126,22 @@ void othello_move_generator::_next_move(bool init)
             continue;
         }
 
-        rc = point_to_coord(_current);
+        rc = _game.point_to_coord(_current);
 
         // inc row
-        for (int r = rc.first + 1; coord_in_bounds(int_pair(r, rc.second)); r++)
+        for (int r = rc.first + 1; _game.coord_in_bounds(int_pair(r, rc.second)); r++)
         {
-            int coord = coord_to_point(int_pair(r, rc.second));
-            if (at(coord) == opp)
+            int coord = _game.coord_to_point(int_pair(r, rc.second));
+            if (_game.at(coord) == opp)
             {
                 cap_size ++;
             }
-            else if (at(coord) == to_play)
+            else if (_game.at(coord) == toplay)
             {
                 should_capture = true;
                 break;
             }
-            else if (at(coord) == EMPTY)
+            else if (_game.at(coord) == EMPTY)
             {
                 break;
             }
@@ -155,19 +155,19 @@ void othello_move_generator::_next_move(bool init)
         // dec row
         should_capture = false;
         cap_size = 0;
-        for (int r = rc.first - 1; coord_in_bounds(int_pair(r, rc.second)); r--)
+        for (int r = rc.first - 1; _game.coord_in_bounds(int_pair(r, rc.second)); r--)
         {
-            int coord = coord_to_point(int_pair(r, rc.second));
-            if (at(coord) == opp)
+            int coord = _game.coord_to_point(int_pair(r, rc.second));
+            if (_game.at(coord) == opp)
             {
                 cap_size ++;
             }
-            else if (at(coord) == to_play)
+            else if (_game.at(coord) == toplay)
             {
                 should_capture = true;
                 break;
             }
-            else if (at(coord) == EMPTY)
+            else if (_game.at(coord) == EMPTY)
             {
                 break;
             }
@@ -180,19 +180,19 @@ void othello_move_generator::_next_move(bool init)
         // inc col
         should_capture = false;
         cap_size = 0;
-        for (int c = rc.second + 1; coord_in_bounds(int_pair(rc.first, c)); c++)
+        for (int c = rc.second + 1; _game.coord_in_bounds(int_pair(rc.first, c)); c++)
         {
-            int coord = coord_to_point(int_pair(rc.first, c));
-            if (at(coord) == opp)
+            int coord = _game.coord_to_point(int_pair(rc.first, c));
+            if (_game.at(coord) == opp)
             {
                 cap_size ++;
             }
-            else if (at(coord) == to_play)
+            else if (_game.at(coord) == toplay)
             {
                 should_capture = true;
                 break;
             }
-            else if (at(coord) == EMPTY)
+            else if (_game.at(coord) == EMPTY)
             {
                 break;
             }
@@ -205,19 +205,19 @@ void othello_move_generator::_next_move(bool init)
         // dec col
         should_capture = false;
         cap_size = 0;
-        for (int c = rc.second - 1; coord_in_bounds(int_pair(rc.first, c)); c--)
+        for (int c = rc.second - 1; _game.coord_in_bounds(int_pair(rc.first, c)); c--)
         {
-            int coord = coord_to_point(int_pair(rc.first, c));
-            if (at(coord) == opp)
+            int coord = _game.coord_to_point(int_pair(rc.first, c));
+            if (_game.at(coord) == opp)
             {
                 cap_size ++;
             }
-            else if (at(coord) == to_play)
+            else if (_game.at(coord) == toplay)
             {
                 should_capture = true;
                 break;
             }
-            else if (at(coord) == EMPTY)
+            else if (_game.at(coord) == EMPTY)
             {
                 break;
             }
@@ -230,19 +230,19 @@ void othello_move_generator::_next_move(bool init)
         // inc row and col
         should_capture = false;
         cap_size = 0;
-        for (int r = rc.first + 1, c = rc.second + 1; coord_in_bounds(int_pair(r, c)); r++, c++)
+        for (int r = rc.first + 1, c = rc.second + 1; _game.coord_in_bounds(int_pair(r, c)); r++, c++)
         {
-            int coord = coord_to_point(int_pair(r, c));
-            if (at(coord) == opp)
+            int coord = _game.coord_to_point(int_pair(r, c));
+            if (_game.at(coord) == opp)
             {
                 cap_size ++;
             }
-            else if (at(coord) == to_play)
+            else if (_game.at(coord) == toplay)
             {
                 should_capture = true;
                 break;
             }
-            else if (at(coord) == EMPTY)
+            else if (_game.at(coord) == EMPTY)
             {
                 break;
             }
@@ -255,19 +255,19 @@ void othello_move_generator::_next_move(bool init)
         // inc row, dec col
         should_capture = false;
         cap_size = 0;
-        for (int r = rc.first + 1, c = rc.second - 1; coord_in_bounds(int_pair(r, c)); r++, c--)
+        for (int r = rc.first + 1, c = rc.second - 1; _game.coord_in_bounds(int_pair(r, c)); r++, c--)
         {
-            int coord = coord_to_point(int_pair(r, c));
-            if (at(coord) == opp)
+            int coord = _game.coord_to_point(int_pair(r, c));
+            if (_game.at(coord) == opp)
             {
                 cap_size ++;
             }
-            else if (at(coord) == to_play)
+            else if (_game.at(coord) == toplay)
             {
                 should_capture = true;
                 break;
             }
-            else if (at(coord) == EMPTY)
+            else if (_game.at(coord) == EMPTY)
             {
                 break;
             }
@@ -280,19 +280,19 @@ void othello_move_generator::_next_move(bool init)
         // dec row, inc col
         should_capture = false;
         cap_size = 0;
-        for (int r = rc.first - 1, c = rc.second + 1; coord_in_bounds(int_pair(r, c)); r--, c++)
+        for (int r = rc.first - 1, c = rc.second + 1; _game.coord_in_bounds(int_pair(r, c)); r--, c++)
         {
-            int coord = coord_to_point(int_pair(r, c));
-            if (at(coord) == opp)
+            int coord = _game.coord_to_point(int_pair(r, c));
+            if (_game.at(coord) == opp)
             {
                 cap_size ++;
             }
-            else if (at(coord) == to_play)
+            else if (_game.at(coord) == toplay)
             {
                 should_capture = true;
                 break;
             }
-            else if (at(coord) == EMPTY)
+            else if (_game.at(coord) == EMPTY)
             {
                 break;
             }
@@ -305,19 +305,19 @@ void othello_move_generator::_next_move(bool init)
         // dec row and col
         should_capture = false;
         cap_size = 0;
-        for (int r = rc.first - 1, c = rc.second - 1; coord_in_bounds(int_pair(r, c)); r--, c--)
+        for (int r = rc.first - 1, c = rc.second - 1; _game.coord_in_bounds(int_pair(r, c)); r--, c--)
         {
-            int coord = coord_to_point(int_pair(r, c));
-            if (at(coord) == opp)
+            int coord = _game.coord_to_point(int_pair(r, c));
+            if (_game.at(coord) == opp)
             {
                 cap_size ++;
             }
-            else if (at(coord) == to_play)
+            else if (_game.at(coord) == toplay)
             {
                 should_capture = true;
                 break;
             }
-            else if (at(coord) == EMPTY)
+            else if (_game.at(coord) == EMPTY)
             {
                 break;
             }
@@ -396,6 +396,8 @@ void othello::play(const ::move& m, bw to_play)
 {
     grid::play(m, to_play);
 
+    print(cout);
+
     const int to = m & MOVE_AREA;
     int dirs = m & DIR_AREA;
     assert(at(to) == EMPTY);
@@ -406,7 +408,6 @@ void othello::play(const ::move& m, bw to_play)
 
     // ray cast
     int_pair rc = point_to_coord(m);
-    int_pair grid_shape = shape();
     std::vector<int> to_capture;
     bool should_capture;
 
@@ -681,7 +682,6 @@ void othello::undo_move()
 
     // raycast
     int_pair rc = point_to_coord(mc);
-    int_pair grid_shape = shape();
 
     // inc row
     if (dirs & (1 << 0))
