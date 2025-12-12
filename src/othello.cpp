@@ -74,14 +74,14 @@ othello_move_generator::operator bool() const
 
     oth_move |= _current;
 
-    oth_move |= (_south ? 1 : 0) << 29;
-    oth_move |= (_north ? 1 : 0) << 28;
-    oth_move |= (_east ? 1 : 0) << 27;
-    oth_move |= (_west ? 1 : 0) << 26;
-    oth_move |= (_south_east ? 1 : 0) << 25;
-    oth_move |= (_south_west ? 1 : 0) << 24;
-    oth_move |= (_north_east ? 1 : 0) << 23;
-    oth_move |= (_north_west ? 1 : 0) << 22;
+    oth_move |= (_south ? 1 : 0) << 22;
+    oth_move |= (_north ? 1 : 0) << 23;
+    oth_move |= (_east ? 1 : 0) << 24;
+    oth_move |= (_west ? 1 : 0) << 25;
+    oth_move |= (_south_east ? 1 : 0) << 26;
+    oth_move |= (_south_west ? 1 : 0) << 27;
+    oth_move |= (_north_east ? 1 : 0) << 28;
+    oth_move |= (_north_west ? 1 : 0) << 29;
 
     return oth_move;
 }
