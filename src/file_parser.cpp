@@ -823,4 +823,5 @@ void file_parser::_init_game_parsers()
 
     // score-counting games
     _add_game_parser("dots_and_boxes", new basic_parser<dots_and_boxes>());
+    _add_game_parser("othello", new basic_parser<othello>());
 }

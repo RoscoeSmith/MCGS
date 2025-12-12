@@ -517,9 +517,9 @@ const int_pair dots_and_boxes::get_shape() const
 void dots_and_boxes::undo_move()
 {
 
-    std::vector<::move> moves = last_multimove();
+    int num_moves = last_multimove().size();
 
-    for(::move m : moves)
+    for(int i = 0; i < num_moves; i++)
     {
         undo_move_single();
     }
@@ -553,8 +553,6 @@ void dots_and_boxes::_init_hash(local_hash& hash) const
 
 void dots_and_boxes::play(const move& m, bw to_play)
 {
-
-    // cout << pretty_print() << endl;
 
     game::play(m, to_play);
 
@@ -615,9 +613,6 @@ void dots_and_boxes::play(const move& m, bw to_play)
 
 void dots_and_boxes::undo_move_single()
 {
-
-    // cout << pretty_print() << endl;
-
     ::move m = last_move();
     game::undo_move();
 
