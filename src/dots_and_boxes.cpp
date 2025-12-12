@@ -611,34 +611,6 @@ void dots_and_boxes::play(const move& m, bw to_play)
         _right_score += num_captures;
     }
 
-    // if (_hash_updatable())
-    // {
-
-    //     local_hash& hash = _get_hash_ref();
-
-    //     cout << "in play\n" << std::bitset<64>(hash.get_value()) << endl;
-
-    //     hash.toggle_value(2 + pos, static_cast<int>(false));
-    //     hash.toggle_value(2 + pos, static_cast<int>(true));
-
-    //     if(cap1 != -1)
-    //     {
-    //         hash.toggle_value(2 + _get_total_moves() + cap1, EMPTY);
-    //         hash.toggle_value(2 + _get_total_moves() + cap1, to_play);
-    //     }
-
-    //     if(cap2 != -1)
-    //     {
-    //         hash.toggle_value(2 + _get_total_moves() + cap2, EMPTY);
-    //         hash.toggle_value(2 + _get_total_moves() + cap2, to_play);
-    //     }
-
-    //     cout << std::bitset<64>(hash.get_value()) << "\n" << endl;
-
-
-    //     _mark_hash_updated();
-    // }
-
 }
 
 void dots_and_boxes::undo_move_single()
@@ -706,32 +678,6 @@ void dots_and_boxes::undo_move_single()
     {
         _right_score -= num_captures;
     }
-
-    // if (_hash_updatable())
-    // {
-    //     local_hash& hash = _get_hash_ref();
-
-    //     cout << "in undo\n" << std::bitset<64>(hash.get_value()) << endl;
-
-    //     hash.toggle_value(2 + pos, static_cast<int>(true));
-    //     hash.toggle_value(2 + pos, static_cast<int>(false));
-
-    //     if(cap1 != -1)
-    //     {
-    //         hash.toggle_value(2 + _get_total_moves() + cap1, to_play);
-    //         hash.toggle_value(2 + _get_total_moves() + cap1, EMPTY);
-    //     }
-
-    //     if(cap2 != -1)
-    //     {
-    //         hash.toggle_value(2 + _get_total_moves() + cap2, to_play);
-    //         hash.toggle_value(2 + _get_total_moves() + cap2, EMPTY);
-    //     }
-
-    //     cout << std::bitset<64>(hash.get_value()) << "\n" << endl;
-
-    //     _mark_hash_updated();
-    // }
     
 }
 
