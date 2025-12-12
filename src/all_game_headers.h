@@ -14,4 +14,5 @@
 #include "kayles.h"
 
 #include "dots_and_boxes.h"
+#include "othello.h"
 // IWYU pragma: end_exports
