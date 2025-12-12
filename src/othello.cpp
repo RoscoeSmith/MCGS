@@ -4,6 +4,7 @@
 #include "game.h"
 #include "grid.h"
 #include <vector>
+#include <bitset>
 
 #define MOVE_AREA 0x003FFFFF
 #define DIR_AREA  0x3FC00000
@@ -396,14 +397,16 @@ void othello::play(const ::move& m, bw to_play)
 {
     grid::play(m, to_play);
 
-    cout << grid::board_as_string() << endl;
+    cout << "play " << get_move_stack().size() << "\n" << grid::board_as_string() << endl;
 
     const int to = m & MOVE_AREA;
-    int dirs = m & DIR_AREA;
+    int dirs = (m & DIR_AREA) >> 22;
+
+    // cout << "to: " << to << ", dirs: " << dirs << " ["<< ((m>>29)&1) << ((m>>28)&1) << ((m>>27)&1) << ((m>>26)&1) << ((m>>25)&1) << ((m>>24)&1) << ((m>>23)&1) << ((m>>22)&1) << "]" << endl;
 
     if (dirs == 0)
     {
-        cout << to_play << " passes" << endl;
+        // cout << to_play << " passes" << endl;
         return;
     }
     
@@ -414,18 +417,23 @@ void othello::play(const ::move& m, bw to_play)
     const bw opp = opponent(to_play);
 
     // ray cast
-    int_pair rc = point_to_coord(m);
+    int_pair rc = point_to_coord(to);
     std::vector<int> to_capture;
     bool should_capture;
+
+    // cout << "idx: " << to << ", rc: " << rc.first << ", " << rc.second << endl;
 
     // inc row
     if (dirs & (1 << 0))
     {
+        // cout << "ray south" << endl;
         should_capture = false;
         to_capture.clear();
         for (int r = rc.first + 1; coord_in_bounds(int_pair(r, rc.second)); r++)
         {
+            // cout << "rc: " << r << ", " << rc.second << endl;
             int coord = coord_to_point(int_pair(r, rc.second));
+            // cout << "\tat(rc) = " << at(coord) << endl;
             if (at(coord) == opp)
             {
                 to_capture.push_back(coord);
@@ -441,10 +449,12 @@ void othello::play(const ::move& m, bw to_play)
                 break;
             }
         }
+        // cout << "should cap: " << should_capture << ", size of to_capture: " << to_capture.size() << endl;
         if (should_capture and (!to_capture.empty()))
         {
             for (int& i : to_capture)
             {
+                // cout << "\treplacing idx " << i << endl;
                 replace(i, to_play);
             }
         }
@@ -680,8 +690,10 @@ void othello::undo_move()
     const ::move mc = grid::last_move();
     grid::undo_move();
 
+    cout << "undo " << get_move_stack().size() << "\n" << board_as_string() << endl;
+
     const int to = mc & MOVE_AREA;
-    int dirs = mc & DIR_AREA;
+    int dirs = (mc & DIR_AREA) >> 22;
 
     if (dirs == 0)
     {
@@ -690,10 +702,13 @@ void othello::undo_move()
     
     const bw player = cgt_move::get_color(mc);
     const bw opp = opponent(player);
+
+    // cout << "to: " << to << ", player: " << player << ", opp: " << opp << ", at(to): " << at(to) << endl;
+    int_pair rc = point_to_coord(to);
+    // cout << "DIRS CHECK: " << (dirs) << ", rc: " << rc.first << ", " << rc.second << endl;
     assert(at(to) == player);
 
     // raycast
-    int_pair rc = point_to_coord(mc);
 
     // inc row
     if (dirs & (1 << 0))
@@ -712,7 +727,7 @@ void othello::undo_move()
     }
 
     // dec row
-    if (dirs & (1 << 0))
+    if (dirs & (1 << 1))
     {
         for (int r = rc.first - 2; coord_in_bounds(int_pair(r, rc.second)); r--)
         {
@@ -728,7 +743,7 @@ void othello::undo_move()
     }
 
     // inc col
-    if (dirs & (1 << 0))
+    if (dirs & (1 << 2))
     {
         for (int c = rc.second + 2; coord_in_bounds(int_pair(rc.first, c)); c++)
         {
@@ -744,7 +759,7 @@ void othello::undo_move()
     }
 
     // dec col
-    if (dirs & (1 << 0))
+    if (dirs & (1 << 3))
     {
         for (int c = rc.second - 2; coord_in_bounds(int_pair(rc.first, c)); c--)
         {
@@ -760,7 +775,7 @@ void othello::undo_move()
     }
 
     // inc row and col
-    if (dirs & (1 << 0))
+    if (dirs & (1 << 4))
     {
         for (int r = rc.first + 2, c = rc.second + 2; coord_in_bounds(int_pair(r, c)); r++, c++)
         {
@@ -776,7 +791,7 @@ void othello::undo_move()
     }
 
     // inc row, dec col
-    if (dirs & (1 << 0))
+    if (dirs & (1 << 5))
     {
         for (int r = rc.first + 2, c = rc.second - 2; coord_in_bounds(int_pair(r, c)); r++, c--)
         {
@@ -792,7 +807,7 @@ void othello::undo_move()
     }
 
     // dec row, inc col
-    if (dirs & (1 << 0))
+    if (dirs & (1 << 6))
     {
         for (int r = rc.first - 2, c = rc.second + 2; coord_in_bounds(int_pair(r, c)); r--, c++)
         {
@@ -808,7 +823,7 @@ void othello::undo_move()
     }
 
     // dec row and col
-    if (dirs & (1 << 0))
+    if (dirs & (1 << 7))
     {
         for (int r = rc.first - 2, c = rc.second - 2; coord_in_bounds(int_pair(r, c)); r--, c--)
         {
