@@ -60,12 +60,250 @@ void othello::play(const ::move& m, bw to_play)
 {
     grid::play(m, to_play);
 
-    const int to = m;
+    const int to = cgt_move::decode(m);
     assert(at(to) == EMPTY);
 
     replace(to, to_play);
 
     const bw opp = opponent(to_play);
+
+    // ray cast
+    int_pair rc = point_to_coord(m);
+    int_pair grid_shape = shape();
+    std::vector<int> to_capture;
+    bool should_capture;
+
+    // inc row
+    should_capture = false;
+    to_capture.clear();
+    for (int r = rc.first + 1; coord_in_bounds(int_pair(r, rc.second)); r++)
+    {
+        int coord = coord_to_point(int_pair(r, rc.second));
+        if (at(coord) == opp)
+        {
+            to_capture.push_back(coord);
+            continue;
+        }
+        else if (at(coord) == to_play)
+        {
+            should_capture = true;
+            break;
+        }
+        else if (at(coord) == EMPTY)
+        {
+            break;
+        }
+    }
+    if (should_capture and (not to_capture.empty()))
+    {
+        for (int& i : to_capture)
+        {
+            replace(i, to_play);
+        }
+    }
+
+    // dec row
+    should_capture = false;
+    to_capture.clear();
+    for (int r = rc.first - 1; coord_in_bounds(int_pair(r, rc.second)); r--)
+    {
+        int coord = coord_to_point(int_pair(r, rc.second));
+        if (at(coord) == opp)
+        {
+            to_capture.push_back(coord);
+            continue;
+        }
+        else if (at(coord) == to_play)
+        {
+            should_capture = true;
+            break;
+        }
+        else if (at(coord) == EMPTY)
+        {
+            break;
+        }
+    }
+    if (should_capture and (not to_capture.empty()))
+    {
+        for (int& i : to_capture)
+        {
+            replace(i, to_play);
+        }
+    }
+
+    // inc col
+    should_capture = false;
+    to_capture.clear();
+    for (int c = rc.second + 1; coord_in_bounds(int_pair(rc.first, c)); c++)
+    {
+        int coord = coord_to_point(int_pair(rc.first, c));
+        if (at(coord) == opp)
+        {
+            to_capture.push_back(coord);
+            continue;
+        }
+        else if (at(coord) == to_play)
+        {
+            should_capture = true;
+            break;
+        }
+        else if (at(coord) == EMPTY)
+        {
+            break;
+        }
+    }
+    if (should_capture and (not to_capture.empty()))
+    {
+        for (int& i : to_capture)
+        {
+            replace(i, to_play);
+        }
+    }
+
+    // dec row
+    should_capture = false;
+    to_capture.clear();
+    for (int c = rc.second - 1; coord_in_bounds(int_pair(rc.first, c)); c--)
+    {
+        int coord = coord_to_point(int_pair(rc.first, c));
+        if (at(coord) == opp)
+        {
+            to_capture.push_back(coord);
+            continue;
+        }
+        else if (at(coord) == to_play)
+        {
+            should_capture = true;
+            break;
+        }
+        else if (at(coord) == EMPTY)
+        {
+            break;
+        }
+    }
+    if (should_capture and (not to_capture.empty()))
+    {
+        for (int& i : to_capture)
+        {
+            replace(i, to_play);
+        }
+    }
+
+    // inc row and col
+    should_capture = false;
+    to_capture.clear();
+    for (int r = rc.first + 1, c = rc.second + 1; coord_in_bounds(int_pair(r, c)); r++, c++)
+    {
+        int coord = coord_to_point(int_pair(r, rc.second));
+        if (at(coord) == opp)
+        {
+            to_capture.push_back(coord);
+            continue;
+        }
+        else if (at(coord) == to_play)
+        {
+            should_capture = true;
+            break;
+        }
+        else if (at(coord) == EMPTY)
+        {
+            break;
+        }
+    }
+    if (should_capture and (not to_capture.empty()))
+    {
+        for (int& i : to_capture)
+        {
+            replace(i, to_play);
+        }
+    }
+
+    // inc row, dec col
+    should_capture = false;
+    to_capture.clear();
+    for (int r = rc.first + 1, c = rc.second - 1; coord_in_bounds(int_pair(r, c)); r++, c--)
+    {
+        int coord = coord_to_point(int_pair(r, rc.second));
+        if (at(coord) == opp)
+        {
+            to_capture.push_back(coord);
+            continue;
+        }
+        else if (at(coord) == to_play)
+        {
+            should_capture = true;
+            break;
+        }
+        else if (at(coord) == EMPTY)
+        {
+            break;
+        }
+    }
+    if (should_capture and (not to_capture.empty()))
+    {
+        for (int& i : to_capture)
+        {
+            replace(i, to_play);
+        }
+    }
+
+    // dec row, inc col
+    should_capture = false;
+    to_capture.clear();
+    for (int r = rc.first - 1, c = rc.second + 1; coord_in_bounds(int_pair(r, c)); r--, c++)
+    {
+        int coord = coord_to_point(int_pair(r, rc.second));
+        if (at(coord) == opp)
+        {
+            to_capture.push_back(coord);
+            continue;
+        }
+        else if (at(coord) == to_play)
+        {
+            should_capture = true;
+            break;
+        }
+        else if (at(coord) == EMPTY)
+        {
+            break;
+        }
+    }
+    if (should_capture and (not to_capture.empty()))
+    {
+        for (int& i : to_capture)
+        {
+            replace(i, to_play);
+        }
+    }
+
+    // dec row and col
+    should_capture = false;
+    to_capture.clear();
+    for (int r = rc.first - 1, c = rc.second - 1; coord_in_bounds(int_pair(r, c)); r--, c--)
+    {
+        int coord = coord_to_point(int_pair(r, rc.second));
+        if (at(coord) == opp)
+        {
+            to_capture.push_back(coord);
+            continue;
+        }
+        else if (at(coord) == to_play)
+        {
+            should_capture = true;
+            break;
+        }
+        else if (at(coord) == EMPTY)
+        {
+            break;
+        }
+    }
+    if (should_capture and (not to_capture.empty()))
+    {
+        for (int& i : to_capture)
+        {
+            replace(i, to_play);
+        }
+    }
 }
 
 void othello::undo_move()

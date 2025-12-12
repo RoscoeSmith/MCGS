@@ -16,5 +16,3 @@ public:
 
     move_generator* create_move_generator(bw to_play) const override;
 };
-
-
