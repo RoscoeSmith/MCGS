@@ -85,7 +85,7 @@ othello_move_generator::operator bool() const
     return oth_move;
 }
 
-void othello_move_generator::_next_move(bool inti)
+void othello_move_generator::_next_move(bool init)
 {
 
     assert(init || *this);
@@ -105,6 +105,10 @@ void othello_move_generator::_next_move(bool inti)
     _current ++;
 
     int_pair rc;
+
+    bw to_play = to_play();
+    bw opp = opponent(to_play);
+
 
     bool should_capture = false;
     int cap_size = 0;
