@@ -17,30 +17,64 @@ public:
     ::move gen_move() const override;
 
 private:
+
+    void _next_move(bool init);
+
     const othello& _game;
     int _current; // current stone location to test
+    bool _has_move;
 };
 
 othello_move_generator::othello_move_generator(const othello& game, bw to_play)
     : move_generator(to_play),
-    _game(game)
+    _game(game),
 {
+    _current = -1;
+    _hash_move = false;
+    _next_move(true);
     
 }
 
 void othello_move_generator::operator++()
 {
-    
+    assert(*this);
+    _next_move(false);
 }
 
 othello_move_generator::operator bool() const
 {
-    return false;
+    return _has_move;
 }
 
 ::move othello_move_generator::gen_move() const
 {
-    return 0;
+    return _current;
+}
+
+void othello_move_generator::_next_move(bool inti)
+{
+
+    assert(init || *this);
+
+    _has_move = false;
+
+    _current ++;
+
+    int_pair cord;
+
+    while(_current < _game.size())
+    {
+
+        cord = point_to_coord(_current);
+
+        for(int i = cord.first + 1; coord_in_bounds({cord.first, i}), i++)
+        {
+
+        }
+
+        _current ++;
+    }
+    
 }
 
 
