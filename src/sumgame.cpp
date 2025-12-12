@@ -444,7 +444,6 @@ optional<solve_result> sumgame::_solve_with_timeout(uint64_t depth)
         create_sum_move_generator(toplay));
 
     sumgame_move_generator& mg = *mgp;
-    std::vector<int> option_scores;
 
     // std::cout << "ptm: " << toplay << std::endl;
     // std::cout << dynamic_cast<dots_and_boxes*>(_subgames.at(0))->pretty_print() << "\n---------------------\n" << std::endl;
