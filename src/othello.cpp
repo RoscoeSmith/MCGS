@@ -32,7 +32,7 @@ private:
 
 othello_move_generator::othello_move_generator(const othello& game, bw to_play)
     : move_generator(to_play),
-    _game(game),
+    _game(game)
 {
     _current = -1;
     _has_move = false;
