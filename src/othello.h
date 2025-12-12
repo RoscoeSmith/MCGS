@@ -14,5 +14,13 @@ public:
     void play(const move& m, bw to_play) override;
     void undo_move() override;
 
+    int count_score(bw to_play) const override;
+    bool is_terminal() const override;
+
     move_generator* create_move_generator(bw to_play) const override;
+
+    void print(std::ostream& str) const override { grid::print(str); }
+    game* inverse() const override { assert(false); }
+    void _init_hash(local_hash& hash) const override { grid::_init_hash(hash); }
+    
 };
