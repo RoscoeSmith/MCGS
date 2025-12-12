@@ -6,7 +6,7 @@
 #include "cgt_basics.h"
 #include "game.h"
 
-class scoring_game : public virtual game
+class scoring_game : public game
 {
 public:
     virtual int count_score(bw to_play) const = 0;
